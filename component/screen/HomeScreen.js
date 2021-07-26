@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { Button, FlatList, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 
 
-function HomeScreen() {
+function HomeScreen({ navigation }) {
     const [isLoading, setLoading] = useState(true);
     const [data, setData] = useState([]);
     console.log(data);
@@ -33,16 +33,17 @@ function HomeScreen() {
                         ItemSeparatorComponent={DevideLine}
                         ListHeaderComponent={() => (
                             <View style={{ backgroundColor: "white", flexDirection: "row", alignItems: "center" }}>
-                                <Text style={{ fontWeight: "bold", width: "33%", textAlign: "center" }}>Name</Text>
-                                <Text style={{ width: "33%", textAlign: "center" }}>Price</Text>
-                                <Text style={{ width: "33%", textAlign: "center" }}>Volumn</Text>
+                                <Text style={{ fontWeight: "bold", width: "25%", textAlign: "center" }}>Name</Text>
+                                <Text style={{ width: "25%", textAlign: "center" }}>Price</Text>
+                                <Text style={{ width: "25%", textAlign: "center" }}>Volumn</Text>
                             </View>
                         )}
                         renderItem={({ item }) => (
                             <View style={{ backgroundColor: "#F0FBFC", flexDirection: "row", alignItems: "center" }}>
-                                <Text style={{ fontWeight: "bold", width: "33%", textAlign: "center" }}>{item.name}</Text>
-                                <Text style={{ width: "33%", textAlign: "center" }}>{item.current_price}</Text>
-                                <Text style={{ width: "33%", textAlign: "center" }}>{item.total_volume}</Text>
+                                <Text style={{ fontWeight: "bold", width: "25%", textAlign: "center" }}>{item.name}</Text>
+                                <Text style={{ width: "25%", textAlign: "center" }}>{item.current_price}</Text>
+                                <Text style={{ width: "25%", textAlign: "center" }}>{item.total_volume}</Text>
+                                <Button title="DETAIL" onPress={() => navigation.navigate("Detail", { name: item.name })}></Button>
                             </View>
                         )}
                     />
