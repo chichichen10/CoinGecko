@@ -3,52 +3,77 @@ import { Text, View, Dimensions } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 
 const DetailScreen = ({ navigation, route }) => {
-    const [isLoading, setLoading] = useState(true);
-    const [data, setData] = useState([]);
+    const [isLoadingCoinData, setLoadingCoinData] = useState(true);
+    const [isLoadingMarketData, setLoadingMarketData] = useState(true);
+    const [coinData, setCoinData] = useState([]);
+    const [marketData, setMarketData] = useState([]);
     // console.log(data);
     const screenWidth = Dimensions.get("window").width;
 
     useEffect(() => {
         fetch('https://api.coingecko.com/api/v3/coins/' + route.params.id + '?localization=false')
             .then((response) => response.json())
-            .then((json) => setData(json))
+            .then((json) => setCoinData(json))
             .catch((error) => console.error(error))
-            .finally(() => setLoading(false));
+            .finally(() => setLoadingCoinData(false));
+        fetch('https://api.coingecko.com/api/v3/coins/' + route.params.id + '/market_chart?vs_currency=usd&days=1')
+            .then((response) => response.json())
+            .then((json) => setMarketData(json))
+            .catch((error) => console.error(error))
+            .finally(() => setLoadingMarketData(false));
     }, []);
 
-    const chartData = {
-        labels: ["January", "February", "March", "April", "May", "June"],
-        datasets: [
-            {
-                data: [20, 45, 28, 80, 99, 43],
-                color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`, // optional
-                strokeWidth: 2 // optional
-            }
-        ],
-        legend: ["Rainy Days"] // optional
-    };
+    // const chartData = {
+    //     datasets: [
+    //         {
+    //             data: marketData.prices.map(x => x[1]),
+
+    //             strokeWidth: 2 // optional
+    //         }
+    //     ],
+    //     legend: [coinData.name] // optional
+    // };
 
     const chartConfig = {
-        backgroundColor: 'black',
+        backgroundColor: '#ADADAD',
+        backgroundGradientFrom: '#ADADAD',
+        backgroundGradientTo: '#ADADAD',
         color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
-        strokeWidth: 2, // optional, default 3
+
         barPercentage: 0.5,
-        useShadowColorFromDataset: false // optional
+        useShadowColorFromDataset: false, // optional
+        propsForDots: {
+            r: "0",
+            strokeWidth: "2",
+        }
+
     };
 
     return (
         <View style={{ flex: 1, padding: 24 }}>
-            {isLoading ? <Text>Loading...</Text> :
+            {isLoadingCoinData || isLoadingMarketData ? <Text>Loading...</Text> :
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                    <Text>Details of {data.name}</Text>
-                    <Text>NTD ${data.market_data.current_price.twd}</Text>
-                    <Text>USD ${data.market_data.current_price.usd}</Text>
-                    {/* <LineChart
-                        data={chartData}
-                        width={screenWidth}
+                    <Text>Details of {coinData.name}</Text>
+                    <Text>NTD ${coinData.market_data.current_price.twd}</Text>
+                    <Text>USD ${coinData.market_data.current_price.usd}</Text>
+                    <LineChart
+                        data={{
+                            datasets: [
+                                {
+                                    data: marketData.prices.map(x => x[1]),
+
+                                    strokeWidth: 3 // optional
+                                }
+                            ],
+                            legend: [coinData.name] // optional
+
+                        }}
+                        width={screenWidth - 10}
                         height={220}
                         chartConfig={chartConfig}
-                    /> */}
+                        bezier
+
+                    />
                 </View>
             }</View>
     );
