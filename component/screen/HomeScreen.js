@@ -5,7 +5,7 @@ import { Button, FlatList, StyleSheet, Text, View, TouchableOpacity } from 'reac
 function HomeScreen({ navigation }) {
     const [isLoading, setLoading] = useState(true);
     const [data, setData] = useState([]);
-    console.log(data);
+    // console.log(data);
 
     useEffect(() => {
         fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false')
@@ -43,7 +43,7 @@ function HomeScreen({ navigation }) {
                                 <Text style={{ fontWeight: "bold", width: "25%", textAlign: "center" }}>{item.name}</Text>
                                 <Text style={{ width: "25%", textAlign: "center" }}>{item.current_price}</Text>
                                 <Text style={{ width: "25%", textAlign: "center" }}>{item.total_volume}</Text>
-                                <Button title="DETAIL" onPress={() => navigation.navigate("Detail", { name: item.name })}></Button>
+                                <TouchableOpacity style={{ alignItems: "center", marginLeft: 10, padding: 10, backgroundColor: "gray" }} onPress={() => navigation.navigate("Detail", { id: item.id })}><Text>DETAIL</Text></TouchableOpacity>
                             </View>
                         )}
                     />
