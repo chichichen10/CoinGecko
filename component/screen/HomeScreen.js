@@ -5,8 +5,11 @@ import RNPickerSelect from 'react-native-picker-select';
 function HomeScreen({ navigation }) {
     const [isLoading, setLoading] = useState(true);
     const [data, setData] = useState([]);
+    // const [moreData, setMoreData] = useState([]);
     const [sortBy, setSortBy] = useState("price");
     const [descending, setDescending] = useState(true);
+    // const [refreshing, setRefreshing] = useState(false);
+    const [renderCount, setRenderCount] = useState(0);
 
     useEffect(() => {
         fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=price_desc&per_page=25&page=1&sparkline=false')
@@ -23,8 +26,16 @@ function HomeScreen({ navigation }) {
             .then((response) => response.json())
             .then((json) => setData(json))
             .catch((error) => console.error(error))
-            .finally(() => { setLoading(false); console.log("done") });
+            .finally(() => { setLoading(false) });
     }, [sortBy, descending]);
+
+    const fetchMore = () => {
+        fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=' + sortBy + '_' + textOrder() + '&per_page=25&page=' + (renderCount + 2) + '&sparkline=false')
+            .then((response) => response.json())
+            .then((json) => setData(data.concat(json)))
+            .catch((error) => console.error(error))
+            .finally(() => { setRenderCount(renderCount + 1) });
+    }
 
     const textArrow = () => descending ? "↓" : "↑";
     const textOrder = () => descending ? "desc" : "asc";
@@ -70,6 +81,8 @@ function HomeScreen({ navigation }) {
                                 <TouchableOpacity style={{ alignItems: "center", marginLeft: 10, padding: 10, backgroundColor: "gray" }} onPress={() => navigation.navigate("Detail", { id: item.id })}><Text>DETAIL</Text></TouchableOpacity>
                             </View>
                         )}
+                    // onRefresh={fetchMore()}
+                    // extraData={renderCount}
                     />
                 </View>
                 )}
