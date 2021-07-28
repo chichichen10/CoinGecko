@@ -1,25 +1,49 @@
 import React, { useEffect, useState } from 'react';
-import { Button, FlatList, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-
+import { FlatList, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import RNPickerSelect from 'react-native-picker-select';
 
 function HomeScreen({ navigation }) {
     const [isLoading, setLoading] = useState(true);
     const [data, setData] = useState([]);
-    // console.log(data);
+    const [sortBy, setSortBy] = useState("price");
+    const [descending, setDescending] = useState(true);
 
     useEffect(() => {
-        fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false')
+        fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=price_desc&per_page=25&page=1&sparkline=false')
             .then((response) => response.json())
             .then((json) => setData(json))
             .catch((error) => console.error(error))
             .finally(() => setLoading(false));
     }, []);
 
+    useEffect(() => {
+        setLoading(true);
+        console.log("sortBy: " + sortBy + " decending" + descending);
+        fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=' + sortBy + '_' + textOrder() + '&per_page=25&page=1&sparkline=false')
+            .then((response) => response.json())
+            .then((json) => setData(json))
+            .catch((error) => console.error(error))
+            .finally(() => { setLoading(false); console.log("done") });
+    }, [sortBy, descending]);
+
+    const textArrow = () => descending ? "↓" : "↑";
+    const textOrder = () => descending ? "desc" : "asc";
+
+    const changeOrder = (target) => {
+        if (sortBy == target) setDescending(!descending);
+        else {
+            setSortBy(target);
+            setDescending(true);
+        }
+
+    }
+
     const DevideLine = () => {
         return (
             <View style={{ height: 1, backgroundColor: 'skyblue' }} />
         )
     }
+
 
 
     return (
@@ -29,13 +53,13 @@ function HomeScreen({ navigation }) {
                 (<View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-between' }}>
                     <FlatList
                         data={data}
-                        keyExtractor={({ id }, index) => id}
+                        keyExtractor={(item) => item.id}
                         ItemSeparatorComponent={DevideLine}
                         ListHeaderComponent={() => (
-                            <View style={{ backgroundColor: "white", flexDirection: "row", alignItems: "center" }}>
-                                <Text style={{ fontWeight: "bold", width: "25%", textAlign: "center" }}>Name</Text>
-                                <Text style={{ width: "25%", textAlign: "center" }}>Price</Text>
-                                <Text style={{ width: "25%", textAlign: "center" }}>Volumn</Text>
+                            <View style={{ backgroundColor: "white", flexDirection: "row", alignItems: "center", height: 50 }}>
+                                <TouchableOpacity onPress={() => changeOrder("id")} style={{ width: "25%", textAlign: "center" }}><Text style={{ fontWeight: sortBy == "id" ? "bold" : "normal", textAlign: "center" }}>Name {sortBy == "name" ? textArrow() : ""}</Text></TouchableOpacity>
+                                <TouchableOpacity onPress={() => changeOrder("price")} style={{ width: "25%", textAlign: "center" }}><Text style={{ fontWeight: sortBy == "price" ? "bold" : "normal", textAlign: "center" }}>Price {sortBy == "price" ? textArrow() : ""}</Text></TouchableOpacity>
+                                <TouchableOpacity onPress={() => changeOrder("volumn")} style={{ width: "25%", textAlign: "center" }}><Text style={{ fontWeight: sortBy == "volumn" ? "bold" : "normal", textAlign: "center" }}>Volumn {sortBy == "volumn" ? textArrow() : ""}</Text></TouchableOpacity>
                             </View>
                         )}
                         renderItem={({ item }) => (

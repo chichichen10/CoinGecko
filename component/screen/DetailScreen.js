@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Text, View, Dimensions } from 'react-native';
-import { LineChart } from 'react-native-chart-kit';
+import { VictoryLine, VictoryChart, VictoryTheme, VictoryAxis } from "victory-native";
+
 
 const DetailScreen = ({ navigation, route }) => {
     const [isLoadingCoinData, setLoadingCoinData] = useState(true);
@@ -23,31 +24,22 @@ const DetailScreen = ({ navigation, route }) => {
             .finally(() => setLoadingMarketData(false));
     }, []);
 
-    // const chartData = {
-    //     datasets: [
-    //         {
-    //             data: marketData.prices.map(x => x[1]),
+    const chartData = [
+        { quarter: 1, earnings: 13000 },
+        { quarter: 2, earnings: 16500 },
+        { quarter: 3, earnings: 14250 },
+        { quarter: 4, earnings: 19000 }
+    ];
 
-    //             strokeWidth: 2 // optional
-    //         }
-    //     ],
-    //     legend: [coinData.name] // optional
-    // };
+    const timestampToString = (timestamp) => {
+        var date = new Date(timestamp);
+        var hours = date.getHours();
+        var minutes = "0" + date.getMinutes();
+        var month = date.getMonth() + 1;
+        var day = date.getDate();
+        return month + '/' + day + '\n' + hours + ':' + minutes.substr(-2);
 
-    const chartConfig = {
-        backgroundColor: '#ADADAD',
-        backgroundGradientFrom: '#ADADAD',
-        backgroundGradientTo: '#ADADAD',
-        color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
-
-        barPercentage: 0.5,
-        useShadowColorFromDataset: false, // optional
-        propsForDots: {
-            r: "0",
-            strokeWidth: "2",
-        }
-
-    };
+    }
 
     return (
         <View style={{ flex: 1, padding: 24 }}>
@@ -56,24 +48,12 @@ const DetailScreen = ({ navigation, route }) => {
                     <Text>Details of {coinData.name}</Text>
                     <Text>NTD ${coinData.market_data.current_price.twd}</Text>
                     <Text>USD ${coinData.market_data.current_price.usd}</Text>
-                    <LineChart
-                        data={{
-                            datasets: [
-                                {
-                                    data: marketData.prices.map(x => x[1]),
+                    <VictoryChart width={350} theme={VictoryTheme.material}>
+                        <VictoryAxis dependentAxis />
 
-                                    strokeWidth: 3 // optional
-                                }
-                            ],
-                            legend: [coinData.name] // optional
-
-                        }}
-                        width={screenWidth - 10}
-                        height={220}
-                        chartConfig={chartConfig}
-                        bezier
-
-                    />
+                        <VictoryLine data={marketData.prices.map(x => ({ time: x[0], price: x[1] }))} x="time" y="price" interpolation="natural" />
+                        <VictoryAxis tickCount={5} tickFormat={(t) => timestampToString(t)} />
+                    </VictoryChart>
                 </View>
             }</View>
     );
