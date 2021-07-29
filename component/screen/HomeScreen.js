@@ -1,7 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { FlatList, StyleSheet, Text, View, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { set } from 'react-native-reanimated';
 import LoadingComponent from '../LoadingComponent'
+
+const Footer = React.memo((props) => {
+    const { isPulling: p } = props;
+
+    return (!p ?
+        <Text style={{ width: "100%", textAlign: "center" }}>Pull for more</Text> :
+        <View>
+            <ActivityIndicator animating size="large" />
+        </View>
+    )
+});
 
 function HomeScreen({ navigation }) {
     const [isLoading, setLoading] = useState(true);
@@ -39,12 +50,12 @@ function HomeScreen({ navigation }) {
                 .catch((error) => console.error(error))
                 .finally(() => { setRenderCount(renderCount + 1); setPulling(false) });
     }, [isPulling]);
-    const fetchMore = () => {
+    const fetchMore = useCallback(() => {
         setPulling(true);
         console.log("pulling");
-    }
+    }, [])
 
-    const textArrow = () => descending ? "↓" : "↑";
+    const textArrow = useCallback(() => descending ? "↓" : "↑", [descending]);
     const textOrder = () => descending ? "desc" : "asc";
 
     const changeOrder = (target) => {
@@ -56,14 +67,14 @@ function HomeScreen({ navigation }) {
 
     }
 
-    const renderFooter = () => {
-        return (!isPulling ?
-            <Text style={{ width: "100%", textAlign: "center" }}>Pull for more</Text> :
-            <View>
-                <ActivityIndicator animating size="large" />
-            </View>
-        )
-    }
+    // const renderFooter = () => {
+    //     return (!isPulling ?
+    //         <Text style={{ width: "100%", textAlign: "center" }}>Pull for more</Text> :
+    //         <View>
+    //             <ActivityIndicator animating size="large" />
+    //         </View>
+    //     )
+    // }
 
     const DevideLine = () => {
         return (
@@ -99,7 +110,7 @@ function HomeScreen({ navigation }) {
                         )}
                         onEndReachedThreshold={-0.1}
                         onEndReached={fetchMore}
-                        ListFooterComponent={renderFooter}
+                        ListFooterComponent={() => <Footer isPulling={isPulling} />}
                     />
                 </View>
                 )}

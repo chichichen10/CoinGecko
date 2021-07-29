@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Text, View, Dimensions, ActivityIndicator } from 'react-native';
+import { Text, View, Dimensions, ActivityIndicator, Platform } from 'react-native';
 import { VictoryLine, VictoryChart, VictoryTheme, VictoryAxis } from "victory-native";
 import LoadingComponent from '../LoadingComponent';
 
@@ -25,12 +25,7 @@ const DetailScreen = ({ navigation, route }) => {
             .finally(() => setLoadingMarketData(false));
     }, []);
 
-    const chartData = [
-        { quarter: 1, earnings: 13000 },
-        { quarter: 2, earnings: 16500 },
-        { quarter: 3, earnings: 14250 },
-        { quarter: 4, earnings: 19000 }
-    ];
+
 
     const timestampToString = (timestamp) => {
         var date = new Date(timestamp);
