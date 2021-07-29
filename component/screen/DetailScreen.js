@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Text, View, Dimensions } from 'react-native';
+import { Text, View, Dimensions, ActivityIndicator } from 'react-native';
 import { VictoryLine, VictoryChart, VictoryTheme, VictoryAxis } from "victory-native";
+import LoadingComponent from '../LoadingComponent';
 
 
 const DetailScreen = ({ navigation, route }) => {
@@ -43,17 +44,19 @@ const DetailScreen = ({ navigation, route }) => {
 
     return (
         <View style={{ flex: 1, padding: 24 }}>
-            {isLoadingCoinData || isLoadingMarketData ? <Text>Loading...</Text> :
+            {isLoadingCoinData || isLoadingMarketData ? <LoadingComponent /> :
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                     <Text>Details of {coinData.name}</Text>
                     <Text>NTD ${coinData.market_data.current_price.twd}</Text>
                     <Text>USD ${coinData.market_data.current_price.usd}</Text>
-                    <VictoryChart width={350} theme={VictoryTheme.material}>
-                        <VictoryAxis dependentAxis />
+                    <View lable={"price"}>
+                        <VictoryChart width={350} theme={VictoryTheme.material}>
+                            <VictoryAxis dependentAxis />
 
-                        <VictoryLine data={marketData.prices.map(x => ({ time: x[0], price: x[1] }))} x="time" y="price" interpolation="natural" />
-                        <VictoryAxis tickCount={5} tickFormat={(t) => timestampToString(t)} />
-                    </VictoryChart>
+                            <VictoryLine data={marketData.prices.map(x => ({ time: x[0], price: x[1] }))} x="time" y="price" interpolation="natural" />
+                            <VictoryAxis tickCount={5} tickFormat={(t) => timestampToString(t)} />
+                        </VictoryChart>
+                    </View>
                 </View>
             }</View>
     );

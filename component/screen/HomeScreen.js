@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import RNPickerSelect from 'react-native-picker-select';
+import { FlatList, StyleSheet, Text, View, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { set } from 'react-native-reanimated';
+import LoadingComponent from '../LoadingComponent'
 
 function HomeScreen({ navigation }) {
     const [isLoading, setLoading] = useState(true);
@@ -10,6 +11,7 @@ function HomeScreen({ navigation }) {
     const [descending, setDescending] = useState(true);
     // const [refreshing, setRefreshing] = useState(false);
     const [renderCount, setRenderCount] = useState(0);
+    const [isPulling, setPulling] = useState(false);
 
     useEffect(() => {
         fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=price_desc&per_page=25&page=1&sparkline=false')
@@ -26,15 +28,20 @@ function HomeScreen({ navigation }) {
             .then((response) => response.json())
             .then((json) => setData(json))
             .catch((error) => console.error(error))
-            .finally(() => { setLoading(false) });
+            .finally(() => { setLoading(false); setRenderCount(0); });
     }, [sortBy, descending]);
 
+    useEffect(() => {
+        if (isPulling)
+            fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=' + sortBy + '_' + textOrder() + '&per_page=25&page=' + (renderCount + 2) + '&sparkline=false')
+                .then((response) => response.json())
+                .then((json) => setData(data.concat(json)))
+                .catch((error) => console.error(error))
+                .finally(() => { setRenderCount(renderCount + 1); setPulling(false) });
+    }, [isPulling]);
     const fetchMore = () => {
-        fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=' + sortBy + '_' + textOrder() + '&per_page=25&page=' + (renderCount + 2) + '&sparkline=false')
-            .then((response) => response.json())
-            .then((json) => setData(data.concat(json)))
-            .catch((error) => console.error(error))
-            .finally(() => { setRenderCount(renderCount + 1) });
+        setPulling(true);
+        console.log("pulling");
     }
 
     const textArrow = () => descending ? "↓" : "↑";
@@ -49,6 +56,15 @@ function HomeScreen({ navigation }) {
 
     }
 
+    const renderFooter = () => {
+        return (!isPulling ?
+            <Text style={{ width: "100%", textAlign: "center" }}>Pull for more</Text> :
+            <View>
+                <ActivityIndicator animating size="large" />
+            </View>
+        )
+    }
+
     const DevideLine = () => {
         return (
             <View style={{ height: 1, backgroundColor: 'skyblue' }} />
@@ -60,17 +76,17 @@ function HomeScreen({ navigation }) {
     return (
 
         <View style={{ flex: 1, padding: 24 }}>
-            {isLoading ? <Text>Loading...</Text> :
+            {isLoading ? <LoadingComponent /> :
                 (<View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-between' }}>
                     <FlatList
                         data={data}
-                        keyExtractor={(item) => item.id}
+                        keyExtractor={(item, index) => index.toString()}
                         ItemSeparatorComponent={DevideLine}
                         ListHeaderComponent={() => (
                             <View style={{ backgroundColor: "white", flexDirection: "row", alignItems: "center", height: 50 }}>
                                 <TouchableOpacity onPress={() => changeOrder("id")} style={{ width: "25%", textAlign: "center" }}><Text style={{ fontWeight: sortBy == "id" ? "bold" : "normal", textAlign: "center" }}>Name {sortBy == "name" ? textArrow() : ""}</Text></TouchableOpacity>
                                 <TouchableOpacity onPress={() => changeOrder("price")} style={{ width: "25%", textAlign: "center" }}><Text style={{ fontWeight: sortBy == "price" ? "bold" : "normal", textAlign: "center" }}>Price {sortBy == "price" ? textArrow() : ""}</Text></TouchableOpacity>
-                                <TouchableOpacity onPress={() => changeOrder("volumn")} style={{ width: "25%", textAlign: "center" }}><Text style={{ fontWeight: sortBy == "volumn" ? "bold" : "normal", textAlign: "center" }}>Volumn {sortBy == "volumn" ? textArrow() : ""}</Text></TouchableOpacity>
+                                <TouchableOpacity onPress={() => changeOrder("volume")} style={{ width: "25%", textAlign: "center" }}><Text style={{ fontWeight: sortBy == "volume" ? "bold" : "normal", textAlign: "center" }}>Volume {sortBy == "volume" ? textArrow() : ""}</Text></TouchableOpacity>
                             </View>
                         )}
                         renderItem={({ item }) => (
@@ -81,8 +97,9 @@ function HomeScreen({ navigation }) {
                                 <TouchableOpacity style={{ alignItems: "center", marginLeft: 10, padding: 10, backgroundColor: "gray" }} onPress={() => navigation.navigate("Detail", { id: item.id })}><Text>DETAIL</Text></TouchableOpacity>
                             </View>
                         )}
-                    // onRefresh={fetchMore()}
-                    // extraData={renderCount}
+                        onEndReachedThreshold={-0.1}
+                        onEndReached={fetchMore}
+                        ListFooterComponent={renderFooter}
                     />
                 </View>
                 )}
