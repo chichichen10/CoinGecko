@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { FlatList, StyleSheet, Text, View, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { set } from 'react-native-reanimated';
-import LoadingComponent from '../LoadingComponent'
+import LoadingComponent from '../components/LoadingComponent'
 
 const Footer = React.memo((props: { isPulling: boolean }) => {
     const { isPulling } = props;
@@ -48,11 +48,14 @@ function HomeScreen({ navigation }) {
                 .then((response) => response.json())
                 .then((json) => setData(data.concat(json)))
                 .catch((error) => console.error(error))
-                .finally(() => { setRenderCount(renderCount + 1); setPulling(false) });
+                .finally(() => {
+                    setRenderCount(renderCount + 1);
+                    setPulling(false)
+                });
     }, [isPulling]);
     const fetchMore = useCallback(() => {
         setPulling(true);
-        console.log("pulling" + renderCount);
+        console.log("pulling");
     }, [])
 
     const refresh = useCallback(() => {
@@ -61,12 +64,15 @@ function HomeScreen({ navigation }) {
             .then((response) => response.json())
             .then((json) => setData(json))
             .catch((error) => console.error(error))
-            .finally(() => { setRefreshing(false); setRenderCount(0); });
+            .finally(() => {
+                setRefreshing(false);
+                setRenderCount(0);
+            });
 
     }, [])
 
     const textArrow = useCallback(() => descending ? "↓" : "↑", [descending]);
-    const textOrder = useCallback(() => descending ? "desc" : "asc", [descending])
+    const textOrder = useCallback(() => descending ? "desc" : "asc", [descending]);
 
     const changeOrder = (target) => {
         if (sortBy == target) setDescending(!descending);

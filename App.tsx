@@ -4,8 +4,8 @@ import { Text, View, Button } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import HomeScreen from './component/screen/HomeScreen'
-import DetailScreen from './component/screen/DetailScreen'
+import HomeScreen from './src/screens/HomeScreen'
+import DetailScreen from './src/screens/DetailScreen'
 
 // function HomeScreen() {
 //   return (

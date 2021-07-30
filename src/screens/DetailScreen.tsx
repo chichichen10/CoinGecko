@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Text, View, Dimensions, ActivityIndicator, Platform } from 'react-native';
 import { VictoryLine, VictoryChart, VictoryTheme, VictoryAxis } from "victory-native";
-import LoadingComponent from '../LoadingComponent';
+import LoadingComponent from '../../src/components/LoadingComponent';
+import { API_Coins, API_Coins_MarketChart } from '../models/CoinGeckoAPIType';
 
 
 const DetailScreen = ({ navigation, route }) => {
     const [isLoadingCoinData, setLoadingCoinData] = useState(true);
     const [isLoadingMarketData, setLoadingMarketData] = useState(true);
-    const [coinData, setCoinData] = useState([]);
-    const [marketData, setMarketData] = useState([]);
+    const [coinData, setCoinData] = useState<API_Coins>(null);
+    const [marketData, setMarketData] = useState<API_Coins_MarketChart>(null);
     // console.log(data);
     const screenWidth = Dimensions.get("window").width;
 
@@ -44,7 +45,7 @@ const DetailScreen = ({ navigation, route }) => {
                     <Text>Details of {coinData.name}</Text>
                     <Text>NTD ${coinData.market_data.current_price.twd}</Text>
                     <Text>USD ${coinData.market_data.current_price.usd}</Text>
-                    <View lable={"price"}>
+                    <View >
                         <VictoryChart width={350} theme={VictoryTheme.material}>
                             <VictoryAxis dependentAxis />
 
