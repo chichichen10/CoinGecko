@@ -3,10 +3,10 @@ import { FlatList, StyleSheet, Text, View, TouchableOpacity, ActivityIndicator }
 import { set } from 'react-native-reanimated';
 import LoadingComponent from '../LoadingComponent'
 
-const Footer = React.memo((props) => {
-    const { isPulling: p } = props;
+const Footer = React.memo((props: { isPulling: boolean }) => {
+    const { isPulling } = props;
 
-    return (!p ?
+    return (!isPulling ?
         <Text style={{ width: "100%", textAlign: "center" }}>Pull for more</Text> :
         <View>
             <ActivityIndicator animating size="large" color="#0000ff" />
@@ -53,7 +53,7 @@ function HomeScreen({ navigation }) {
     const fetchMore = useCallback(() => {
         setPulling(true);
         console.log("pulling" + renderCount);
-    })
+    }, [])
 
     const refresh = useCallback(() => {
         setRefreshing(true);
@@ -63,7 +63,7 @@ function HomeScreen({ navigation }) {
             .catch((error) => console.error(error))
             .finally(() => { setRefreshing(false); setRenderCount(0); });
 
-    })
+    }, [])
 
     const textArrow = useCallback(() => descending ? "↓" : "↑", [descending]);
     const textOrder = useCallback(() => descending ? "desc" : "asc", [descending])
@@ -96,7 +96,7 @@ function HomeScreen({ navigation }) {
 
     return (
 
-        <View style={{ flex: 1, padding: 24 }}>
+        <View style={{ flex: 1 }}>
             {isLoading ? <LoadingComponent /> :
                 (<View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-between' }}>
                     <FlatList
@@ -105,9 +105,9 @@ function HomeScreen({ navigation }) {
                         ItemSeparatorComponent={DevideLine}
                         ListHeaderComponent={() => (
                             <View style={{ backgroundColor: "white", flexDirection: "row", alignItems: "center", height: 50 }}>
-                                <TouchableOpacity onPress={() => changeOrder("id")} style={{ width: "25%", textAlign: "center" }}><Text style={{ fontWeight: sortBy == "id" ? "bold" : "normal", textAlign: "center" }}>Name {sortBy == "id" ? textArrow() : ""}</Text></TouchableOpacity>
-                                <TouchableOpacity onPress={() => changeOrder("price")} style={{ width: "25%", textAlign: "center" }}><Text style={{ fontWeight: sortBy == "price" ? "bold" : "normal", textAlign: "center" }}>Price {sortBy == "price" ? textArrow() : ""}</Text></TouchableOpacity>
-                                <TouchableOpacity onPress={() => changeOrder("volume")} style={{ width: "25%", textAlign: "center" }}><Text style={{ fontWeight: sortBy == "volume" ? "bold" : "normal", textAlign: "center" }}>Volume {sortBy == "volume" ? textArrow() : ""}</Text></TouchableOpacity>
+                                <TouchableOpacity onPress={() => changeOrder("id")} style={{ width: "25%" }}><Text style={{ fontWeight: sortBy == "id" ? "bold" : "normal", textAlign: "center" }}>Name {sortBy == "id" ? textArrow() : ""}</Text></TouchableOpacity>
+                                <TouchableOpacity onPress={() => changeOrder("price")} style={{ width: "25%" }}><Text style={{ fontWeight: sortBy == "price" ? "bold" : "normal", textAlign: "center" }}>Price {sortBy == "price" ? textArrow() : ""}</Text></TouchableOpacity>
+                                <TouchableOpacity onPress={() => changeOrder("volume")} style={{ width: "25%" }}><Text style={{ fontWeight: sortBy == "volume" ? "bold" : "normal", textAlign: "center" }}>Volume {sortBy == "volume" ? textArrow() : ""}</Text></TouchableOpacity>
                             </View>
                         )}
                         renderItem={({ item }) => (
