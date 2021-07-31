@@ -129,6 +129,7 @@ function HomeScreen({ navigation }) {
                         ListFooterComponent={() => <Footer isPulling={isPulling} />}
                         onRefresh={refresh}
                         refreshing={refreshing}
+                        contentContainerStyle={{ padding: 10 }}
                     />
                 </View>
                 )}
