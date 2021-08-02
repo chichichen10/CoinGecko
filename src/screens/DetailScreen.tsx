@@ -18,9 +18,14 @@ const DetailScreen = ({ navigation, route }) => {
   const [marketData, setMarketData] = useState<API_Coins_MarketChart>(null);
   const [dataInterval, setDataInterval] = useState(1);
   const [timeLable, setTimeLable] = useState(["24h", "18h", "12h", "6h"]);
+  const [average, setAverage] = useState([])
 
   // console.log(data);
   const screenWidth = Dimensions.get("window").width;
+
+
+
+
 
   const PriceChart = () => {
     return isLoadingMarketData ? (
@@ -36,12 +41,26 @@ const DetailScreen = ({ navigation, route }) => {
               {
                 data: marketData.prices.map((x) => x[1]),
               },
-            ],
+              {
+                data: average,
+                color: (opacity = 255) => `rgba(255, 0, 0, ${opacity})`
+
+              }]
           }}
           width={screenWidth * 0.9}
           height={220}
           chartConfig={chartConfig}
           bezier
+          withDots={false}
+          withVerticalLines={false}
+          segments={8}
+          formatYLabel={function (x) {
+            if (Number(x) < 10)
+              return Number(x).toFixed(6).toString();
+            else if (Number(x) < 1000)
+              return Number(x).toFixed(4).toString();
+            else return Number(x).toFixed(0).toString();
+          }}
         />
       </View>
     );
@@ -50,8 +69,8 @@ const DetailScreen = ({ navigation, route }) => {
   useEffect(() => {
     fetch(
       "https://api.coingecko.com/api/v3/coins/" +
-        route.params.id +
-        "?localization=false"
+      route.params.id +
+      "?localization=false"
     )
       .then((response) => response.json())
       .then((json) => setCoinData(json))
@@ -60,14 +79,30 @@ const DetailScreen = ({ navigation, route }) => {
   }, []);
 
   useEffect(() => {
+    if (marketData != null) {
+      var a = [];
+      var sum = 0;
+      for (let i = 0; i < marketData.prices.length; i++) {
+        sum += marketData.prices[i][1];
+      }
+      sum /= marketData.prices.length;
+      for (let i = 0; i < marketData.prices.length; i++) {
+        a.push(sum);
+      }
+      setAverage(a);
+      setLoadingMarketData(false);
+    }
+  }, [marketData])
+
+  useEffect(() => {
     switch (dataInterval) {
       case 1:
         setTimeLable(["24h", "18h", "12h", "6h"]);
         break;
-      case 2:
+      case 3:
         setTimeLable(["3d", "2d", "1d"]);
         break;
-      case 3:
+      case 7:
         setTimeLable(["7d", "6d", "5d", "4d", "3d", "2d", "1d"]);
         break;
       default:
@@ -79,15 +114,16 @@ const DetailScreen = ({ navigation, route }) => {
     setLoadingMarketData(true);
     fetch(
       "https://api.coingecko.com/api/v3/coins/" +
-        route.params.id +
-        "/market_chart?vs_currency=usd&days=" +
-        dataInterval
+      route.params.id +
+      "/market_chart?vs_currency=usd&days=" +
+      dataInterval
     )
       .then((response) => response.json())
-      .then((json) => setMarketData(json))
+      .then((json) => { setMarketData(json); })
       .catch((error) => console.error(error))
-      .finally(() => setLoadingMarketData(false));
-  }, [timeLable]);
+
+  }
+    , [timeLable]);
 
   const timestampToString = (timestamp) => {
     var date = new Date(timestamp);
@@ -106,10 +142,14 @@ const DetailScreen = ({ navigation, route }) => {
     barPercentage: 0.5,
     useShadowColorFromDataset: false, // optional
     propsForDots: {
-      r: "0",
+      r: "1",
       strokeWidth: "2",
       stroke: "#ffa726",
     },
+    propsForBackgroundLines: {
+      strokeDasharray: "" // solid background lines with no dashes
+    },
+    decimalPlaces: 10,
   };
 
   return (
