@@ -26,23 +26,25 @@ function HomeScreen({ navigation }) {
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
   // const [moreData, setMoreData] = useState([]);
-  const [sortBy, setSortBy] = useState("price");
+  const [sortBy, setSortBy] = useState("market_cap");
   const [descending, setDescending] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [renderCount, setRenderCount] = useState(0);
   const [isPulling, setPulling] = useState(false);
 
-  useEffect(() => {
-    fetch(
-      "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=price_desc&per_page=25&page=1&sparkline=false"
-    )
-      .then((response) => response.json())
-      .then((json) => setData(json))
-      .catch((error) => console.error(error))
-      .finally(() => setLoading(false));
-  }, []);
+  //   useEffect(() => {
+  //     console.log("run1");
+  //     fetch(
+  //       "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=price_desc&per_page=25&page=1&sparkline=false"
+  //     )
+  //       .then((response) => response.json())
+  //       .then((json) => setData(json))
+  //       .catch((error) => console.error(error))
+  //       .finally(() => setLoading(false));
+  //   }, []);
 
   useEffect(() => {
+    console.log("run2");
     setLoading(true);
     console.log("sortBy: " + sortBy + " decending" + descending);
     fetch(
@@ -211,7 +213,7 @@ function HomeScreen({ navigation }) {
                     textAlign: "center",
                   }}
                 >
-                  {item.name}
+                  {item.id}
                 </Text>
                 <Text style={{ width: "25%", textAlign: "center" }}>
                   {item.current_price}
@@ -232,7 +234,7 @@ function HomeScreen({ navigation }) {
                 </TouchableOpacity>
               </View>
             )}
-            onEndReachedThreshold={0.01}
+            onEndReachedThreshold={0.001}
             onEndReached={fetchMore}
             ListFooterComponent={() => <Footer isPulling={isPulling} />}
             onRefresh={refresh}
