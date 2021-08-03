@@ -47,6 +47,7 @@ function HomeScreen({ navigation }) {
   const [refreshing, setRefreshing] = useState(false);
   const [renderCount, setRenderCount] = useState(0);
   const [isPulling, setPulling] = useState(false);
+  const [initRneder, setInitRneder] = useState(true);
 
   //   useEffect(() => {
   //     console.log("run1");
@@ -59,16 +60,16 @@ function HomeScreen({ navigation }) {
   //       .finally(() => setLoading(false));
   //   }, []);
 
-  useCallback(() => {
+  useEffect(() => {
     console.log("run2");
     setLoading(true);
     console.log("sortBy: " + sortBy + " decending" + descending);
     fetch(
       "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=" +
-        sortBy +
-        "_" +
-        textOrder() +
-        "&per_page=25&page=1&sparkline=false"
+      sortBy +
+      "_" +
+      textOrder() +
+      "&per_page=25&page=1&sparkline=false"
     )
       .then((response) => response.json())
       .then((json) => setData(json))
@@ -83,12 +84,12 @@ function HomeScreen({ navigation }) {
     if (isPulling)
       fetch(
         "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=" +
-          sortBy +
-          "_" +
-          textOrder() +
-          "&per_page=25&page=" +
-          (renderCount + 2) +
-          "&sparkline=false"
+        sortBy +
+        "_" +
+        textOrder() +
+        "&per_page=25&page=" +
+        (renderCount + 2) +
+        "&sparkline=false"
       )
         .then((response) => response.json())
         .then((json) => setData(data.concat(json)))
@@ -111,10 +112,10 @@ function HomeScreen({ navigation }) {
     setRefreshing(true);
     fetch(
       "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=" +
-        sortBy +
-        "_" +
-        textOrder() +
-        "&per_page=25&page=1&sparkline=false"
+      sortBy +
+      "_" +
+      textOrder() +
+      "&per_page=25&page=1&sparkline=false"
     )
       .then((response) => response.json())
       .then((json) => setData(json))
