@@ -6,13 +6,29 @@ import {
   View,
   TouchableOpacity,
   ActivityIndicator,
+  Platform,
 } from "react-native";
 import { set } from "react-native-reanimated";
 import LoadingComponent from "../components/LoadingComponent";
 
-const Footer = React.memo((props: { isPulling: boolean }) => {
-  const { isPulling } = props;
-
+const Footer = React.memo((props: { isPulling: boolean; setPulling }) => {
+  const { isPulling, setPulling } = props;
+  if (Platform.OS === "web") {
+    return !isPulling ? (
+      <TouchableOpacity
+        style={{ padding: 10 }}
+        onPress={() => setPulling(true)}
+      >
+        <Text style={{ width: "80%", textAlign: "center" }}>
+          click for more
+        </Text>
+      </TouchableOpacity>
+    ) : (
+      <View>
+        <ActivityIndicator animating size="large" color="#0000ff" />
+      </View>
+    );
+  }
   return !isPulling ? (
     <Text style={{ width: "100%", textAlign: "center" }}>Pull for more</Text>
   ) : (
@@ -43,7 +59,7 @@ function HomeScreen({ navigation }) {
   //       .finally(() => setLoading(false));
   //   }, []);
 
-  useEffect(() => {
+  useCallback(() => {
     console.log("run2");
     setLoading(true);
     console.log("sortBy: " + sortBy + " decending" + descending);
@@ -83,8 +99,12 @@ function HomeScreen({ navigation }) {
         });
   }, [isPulling]);
   const fetchMore = useCallback(() => {
-    setPulling(true);
-    console.log("pulling");
+    if (Platform.OS !== "web") {
+      setPulling(true);
+      console.log("pulling from mobile");
+    } else {
+      console.log("from web!");
+    }
   }, []);
 
   const refresh = useCallback(() => {
@@ -103,7 +123,7 @@ function HomeScreen({ navigation }) {
         setRefreshing(false);
         setRenderCount(0);
       });
-  }, []);
+  }, [sortBy]);
 
   const textArrow = useCallback(() => (descending ? "↓" : "↑"), [descending]);
   const textOrder = useCallback(
@@ -111,13 +131,16 @@ function HomeScreen({ navigation }) {
     [descending]
   );
 
-  const changeOrder = (target) => {
-    if (sortBy == target) setDescending(!descending);
-    else {
-      setSortBy(target);
-      setDescending(true);
-    }
-  };
+  const changeOrder = useCallback(
+    (target) => {
+      if (sortBy == target) setDescending(!descending);
+      else {
+        setSortBy(target);
+        setDescending(true);
+      }
+    },
+    [sortBy]
+  );
 
   // const renderFooter = () => {
   //     return (!isPulling ?
@@ -128,9 +151,63 @@ function HomeScreen({ navigation }) {
   //     )
   // }
 
-  const DevideLine = () => {
+  const DevideLine = useCallback(() => {
     return <View style={{ height: 1, backgroundColor: "skyblue" }} />;
-  };
+  }, []);
+
+  const HeaderComponent = useCallback(
+    () => (
+      <View
+        style={{
+          backgroundColor: "white",
+          flexDirection: "row",
+          alignItems: "center",
+          height: 50,
+        }}
+      >
+        <TouchableOpacity
+          onPress={() => changeOrder("id")}
+          style={{ width: "25%" }}
+        >
+          <Text
+            style={{
+              fontWeight: sortBy == "id" ? "bold" : "normal",
+              textAlign: "center",
+            }}
+          >
+            Name {sortBy == "id" ? textArrow() : ""}
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => changeOrder("price")}
+          style={{ width: "25%" }}
+        >
+          <Text
+            style={{
+              fontWeight: sortBy == "price" ? "bold" : "normal",
+              textAlign: "center",
+            }}
+          >
+            Price {sortBy == "price" ? textArrow() : ""}
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => changeOrder("volume")}
+          style={{ width: "25%" }}
+        >
+          <Text
+            style={{
+              fontWeight: sortBy == "volume" ? "bold" : "normal",
+              textAlign: "center",
+            }}
+          >
+            Volume {sortBy == "volume" ? textArrow() : ""}
+          </Text>
+        </TouchableOpacity>
+      </View>
+    ),
+    [sortBy]
+  );
 
   return (
     <View style={{ flex: 1 }}>
@@ -148,56 +225,7 @@ function HomeScreen({ navigation }) {
             data={data}
             keyExtractor={(item, index) => index.toString()}
             ItemSeparatorComponent={DevideLine}
-            ListHeaderComponent={() => (
-              <View
-                style={{
-                  backgroundColor: "white",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  height: 50,
-                }}
-              >
-                <TouchableOpacity
-                  onPress={() => changeOrder("id")}
-                  style={{ width: "25%" }}
-                >
-                  <Text
-                    style={{
-                      fontWeight: sortBy == "id" ? "bold" : "normal",
-                      textAlign: "center",
-                    }}
-                  >
-                    Name {sortBy == "id" ? textArrow() : ""}
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => changeOrder("price")}
-                  style={{ width: "25%" }}
-                >
-                  <Text
-                    style={{
-                      fontWeight: sortBy == "price" ? "bold" : "normal",
-                      textAlign: "center",
-                    }}
-                  >
-                    Price {sortBy == "price" ? textArrow() : ""}
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => changeOrder("volume")}
-                  style={{ width: "25%" }}
-                >
-                  <Text
-                    style={{
-                      fontWeight: sortBy == "volume" ? "bold" : "normal",
-                      textAlign: "center",
-                    }}
-                  >
-                    Volume {sortBy == "volume" ? textArrow() : ""}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            )}
+            ListHeaderComponent={HeaderComponent}
             renderItem={({ item }) => (
               <View
                 style={{
@@ -234,9 +262,11 @@ function HomeScreen({ navigation }) {
                 </TouchableOpacity>
               </View>
             )}
-            onEndReachedThreshold={0.001}
+            onEndReachedThreshold={0.1}
             onEndReached={fetchMore}
-            ListFooterComponent={() => <Footer isPulling={isPulling} />}
+            ListFooterComponent={
+              <Footer isPulling={isPulling} setPulling={setPulling} />
+            }
             onRefresh={refresh}
             refreshing={refreshing}
             contentContainerStyle={{ padding: 10 }}
