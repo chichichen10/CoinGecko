@@ -6,6 +6,9 @@ export interface ApiCoins {
       twd: number;
       usd: number;
     };
+    price_change_percentage_24h_in_currency: {
+      usd: number;
+    };
   };
 }
 export interface ApiCoinsMarketChart {

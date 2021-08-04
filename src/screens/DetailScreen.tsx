@@ -133,6 +133,44 @@ const DetailScreen = ({ route }) => {
   //   return `${month}/${day}\n${hours}:${minutes.substr(-2)}`;
   // };
 
+  const PriceDetail = () => (isLoadingCoinData ? (
+    <View>
+      <Text>Loading...</Text>
+    </View>
+  ) : (
+    <View
+      style={{
+        flex: 0.2,
+        flexDirection: 'row',
+        alignItems: 'center',
+        width: screenWidth * 0.9,
+      }}
+    >
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text style={{ fontSize: 8 }}>USD $</Text>
+        <Text style={{ fontSize: 28 }}>{coinData.market_data.current_price.usd}</Text>
+      </View>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text style={{ fontSize: 8 }}>Last 24H</Text>
+        <Text
+          style={{
+            fontSize: 28,
+            backgroundColor:
+                coinData.market_data.price_change_percentage_24h_in_currency.usd >= 0
+                  ? 'red'
+                  : 'green',
+            padding: 3,
+            color: 'white',
+          }}
+        >
+          {coinData.market_data.price_change_percentage_24h_in_currency.usd >= 0 ? '+' : ''}
+          {coinData.market_data.price_change_percentage_24h_in_currency.usd.toFixed(2)}
+          %
+        </Text>
+      </View>
+    </View>
+  ));
+
   return (
     <View style={{ flex: 1, padding: 24 }}>
       {isLoadingCoinData ? (
@@ -145,19 +183,8 @@ const DetailScreen = ({ route }) => {
             alignItems: 'center',
           }}
         >
-          <Text>
-            Details of
-            {coinData.name}
-          </Text>
-          <Text>
-            NTD $
-            {coinData.market_data.current_price.twd}
-          </Text>
-          <Text>
-            USD $
-            {coinData.market_data.current_price.usd}
-          </Text>
-
+          <Text style={{ fontSize: 20 }}>{coinData.name}</Text>
+          <PriceDetail />
           <View style={{ flexDirection: 'row', paddingTop: 10, paddingBottom: 20 }}>
             <TouchableOpacity
               style={{
