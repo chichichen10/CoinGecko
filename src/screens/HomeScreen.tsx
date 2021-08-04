@@ -1,27 +1,15 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from 'react';
 import {
-  FlatList,
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  ActivityIndicator,
-  Platform,
-} from "react-native";
-import { set } from "react-native-reanimated";
-import LoadingComponent from "../components/LoadingComponent";
+  FlatList, Text, View, TouchableOpacity, ActivityIndicator, Platform,
+} from 'react-native';
+import LoadingComponent from '../components/LoadingComponent';
 
 const Footer = React.memo((props: { isPulling: boolean; setPulling }) => {
   const { isPulling, setPulling } = props;
-  if (Platform.OS === "web") {
+  if (Platform.OS === 'web') {
     return !isPulling ? (
-      <TouchableOpacity
-        style={{ padding: 10 }}
-        onPress={() => setPulling(true)}
-      >
-        <Text style={{ width: "80%", textAlign: "center" }}>
-          click for more
-        </Text>
+      <TouchableOpacity style={{ padding: 10 }} onPress={() => setPulling(true)}>
+        <Text style={{ width: '80%', textAlign: 'center' }}>click for more</Text>
       </TouchableOpacity>
     ) : (
       <View>
@@ -30,7 +18,7 @@ const Footer = React.memo((props: { isPulling: boolean; setPulling }) => {
     );
   }
   return !isPulling ? (
-    <Text style={{ width: "100%", textAlign: "center" }}>Pull for more</Text>
+    <Text style={{ width: '100%', textAlign: 'center' }}>Pull for more</Text>
   ) : (
     <View>
       <ActivityIndicator animating size="large" color="#0000ff" />
@@ -42,12 +30,12 @@ function HomeScreen({ navigation }) {
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
   // const [moreData, setMoreData] = useState([]);
-  const [sortBy, setSortBy] = useState("market_cap");
+  const [sortBy, setSortBy] = useState('market_cap');
   const [descending, setDescending] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [renderCount, setRenderCount] = useState(0);
   const [isPulling, setPulling] = useState(false);
-  const [initRneder, setInitRneder] = useState(true);
+  // const [initRneder, setInitRneder] = useState(true);
 
   //   useEffect(() => {
   //     console.log("run1");
@@ -60,16 +48,15 @@ function HomeScreen({ navigation }) {
   //       .finally(() => setLoading(false));
   //   }, []);
 
+  const textArrow = useCallback(() => (descending ? '↓' : '↑'), [descending]);
+  const textOrder = useCallback(() => (descending ? 'desc' : 'asc'), [descending]);
+
   useEffect(() => {
-    console.log("run2");
+    console.log('run2');
     setLoading(true);
-    console.log("sortBy: " + sortBy + " decending" + descending);
+    console.log(`sortBy: ${sortBy} decending${descending}`);
     fetch(
-      "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=" +
-      sortBy +
-      "_" +
-      textOrder() +
-      "&per_page=25&page=1&sparkline=false"
+      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=${sortBy}_${textOrder()}&per_page=25&page=1&sparkline=false`,
     )
       .then((response) => response.json())
       .then((json) => setData(json))
@@ -81,15 +68,11 @@ function HomeScreen({ navigation }) {
   }, [sortBy, descending]);
 
   useEffect(() => {
-    if (isPulling)
+    if (isPulling) {
       fetch(
-        "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=" +
-        sortBy +
-        "_" +
-        textOrder() +
-        "&per_page=25&page=" +
-        (renderCount + 2) +
-        "&sparkline=false"
+        `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=${sortBy}_${textOrder()}&per_page=25&page=${
+          renderCount + 2
+        }&sparkline=false`,
       )
         .then((response) => response.json())
         .then((json) => setData(data.concat(json)))
@@ -98,24 +81,21 @@ function HomeScreen({ navigation }) {
           setRenderCount(renderCount + 1);
           setPulling(false);
         });
+    }
   }, [isPulling]);
   const fetchMore = useCallback(() => {
-    if (Platform.OS !== "web") {
+    if (Platform.OS !== 'web') {
       setPulling(true);
-      console.log("pulling from mobile");
+      console.log('pulling from mobile');
     } else {
-      console.log("from web!");
+      console.log('from web!');
     }
   }, []);
 
   const refresh = useCallback(() => {
     setRefreshing(true);
     fetch(
-      "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=" +
-      sortBy +
-      "_" +
-      textOrder() +
-      "&per_page=25&page=1&sparkline=false"
+      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=${sortBy}_${textOrder()}&per_page=25&page=1&sparkline=false`,
     )
       .then((response) => response.json())
       .then((json) => setData(json))
@@ -126,21 +106,15 @@ function HomeScreen({ navigation }) {
       });
   }, [sortBy]);
 
-  const textArrow = useCallback(() => (descending ? "↓" : "↑"), [descending]);
-  const textOrder = useCallback(
-    () => (descending ? "desc" : "asc"),
-    [descending]
-  );
-
   const changeOrder = useCallback(
     (target) => {
-      if (sortBy == target) setDescending(!descending);
+      if (sortBy === target) setDescending(!descending);
       else {
         setSortBy(target);
         setDescending(true);
       }
     },
-    [sortBy]
+    [sortBy],
   );
 
   // const renderFooter = () => {
@@ -152,62 +126,60 @@ function HomeScreen({ navigation }) {
   //     )
   // }
 
-  const DevideLine = useCallback(() => {
-    return <View style={{ height: 1, backgroundColor: "skyblue" }} />;
-  }, []);
+  const DevideLine = useCallback(
+    () => <View style={{ height: 1, backgroundColor: 'skyblue' }} />,
+    [],
+  );
 
   const HeaderComponent = useCallback(
     () => (
       <View
         style={{
-          backgroundColor: "white",
-          flexDirection: "row",
-          alignItems: "center",
+          backgroundColor: 'white',
+          flexDirection: 'row',
+          alignItems: 'center',
           height: 50,
         }}
       >
-        <TouchableOpacity
-          onPress={() => changeOrder("id")}
-          style={{ width: "25%" }}
-        >
+        <TouchableOpacity onPress={() => changeOrder('id')} style={{ width: '25%' }}>
           <Text
             style={{
-              fontWeight: sortBy == "id" ? "bold" : "normal",
-              textAlign: "center",
+              fontWeight: sortBy === 'id' ? 'bold' : 'normal',
+              textAlign: 'center',
             }}
           >
-            Name {sortBy == "id" ? textArrow() : ""}
+            Name
+            {' '}
+            {sortBy === 'id' ? textArrow() : ''}
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => changeOrder("price")}
-          style={{ width: "25%" }}
-        >
+        <TouchableOpacity onPress={() => changeOrder('price')} style={{ width: '25%' }}>
           <Text
             style={{
-              fontWeight: sortBy == "price" ? "bold" : "normal",
-              textAlign: "center",
+              fontWeight: sortBy === 'price' ? 'bold' : 'normal',
+              textAlign: 'center',
             }}
           >
-            Price {sortBy == "price" ? textArrow() : ""}
+            Price
+            {' '}
+            {sortBy === 'price' ? textArrow() : ''}
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => changeOrder("volume")}
-          style={{ width: "25%" }}
-        >
+        <TouchableOpacity onPress={() => changeOrder('volume')} style={{ width: '25%' }}>
           <Text
             style={{
-              fontWeight: sortBy == "volume" ? "bold" : "normal",
-              textAlign: "center",
+              fontWeight: sortBy === 'volume' ? 'bold' : 'normal',
+              textAlign: 'center',
             }}
           >
-            Volume {sortBy == "volume" ? textArrow() : ""}
+            Volume
+            {' '}
+            {sortBy === 'volume' ? textArrow() : ''}
           </Text>
         </TouchableOpacity>
       </View>
     ),
-    [sortBy]
+    [sortBy],
   );
 
   return (
@@ -218,8 +190,8 @@ function HomeScreen({ navigation }) {
         <View
           style={{
             flex: 1,
-            flexDirection: "column",
-            justifyContent: "space-between",
+            flexDirection: 'column',
+            justifyContent: 'space-between',
           }}
         >
           <FlatList
@@ -230,34 +202,30 @@ function HomeScreen({ navigation }) {
             renderItem={({ item }) => (
               <View
                 style={{
-                  backgroundColor: "#F0FBFC",
-                  flexDirection: "row",
-                  alignItems: "center",
+                  backgroundColor: '#F0FBFC',
+                  flexDirection: 'row',
+                  alignItems: 'center',
                 }}
               >
                 <Text
                   style={{
-                    fontWeight: "bold",
-                    width: "25%",
-                    textAlign: "center",
+                    fontWeight: 'bold',
+                    width: '25%',
+                    textAlign: 'center',
                   }}
                 >
                   {item.id}
                 </Text>
-                <Text style={{ width: "25%", textAlign: "center" }}>
-                  {item.current_price}
-                </Text>
-                <Text style={{ width: "25%", textAlign: "center" }}>
-                  {item.total_volume}
-                </Text>
+                <Text style={{ width: '25%', textAlign: 'center' }}>{item.current_price}</Text>
+                <Text style={{ width: '25%', textAlign: 'center' }}>{item.total_volume}</Text>
                 <TouchableOpacity
                   style={{
-                    alignItems: "center",
+                    alignItems: 'center',
                     marginLeft: 10,
                     padding: 10,
-                    backgroundColor: "gray",
+                    backgroundColor: 'gray',
                   }}
-                  onPress={() => navigation.navigate("Detail", { id: item.id })}
+                  onPress={() => navigation.navigate('Detail', { id: item.id })}
                 >
                   <Text>DETAIL</Text>
                 </TouchableOpacity>
@@ -265,9 +233,7 @@ function HomeScreen({ navigation }) {
             )}
             onEndReachedThreshold={0.1}
             onEndReached={fetchMore}
-            ListFooterComponent={
-              <Footer isPulling={isPulling} setPulling={setPulling} />
-            }
+            ListFooterComponent={<Footer isPulling={isPulling} setPulling={setPulling} />}
             onRefresh={refresh}
             refreshing={refreshing}
             contentContainerStyle={{ padding: 10 }}
