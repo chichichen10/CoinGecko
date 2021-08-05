@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
   Text, View, Dimensions, ActivityIndicator, TouchableOpacity,
 } from 'react-native';
+
 import { LineChart } from 'react-native-chart-kit';
 import LoadingComponent from '../components/LoadingComponent';
 import { ApiCoins, ApiCoinsMarketChart } from '../models/CoinGeckoAPIType';
@@ -75,9 +76,11 @@ const DetailScreen = ({ route }) => {
   useEffect(() => {
     fetch(`https://api.coingecko.com/api/v3/coins/${route.params.id}?localization=false`)
       .then((response) => response.json())
-      .then((json) => setCoinData(json))
-      .catch((error) => console.error(error))
-      .finally(() => setLoadingCoinData(false));
+      .then((json) => {
+        setCoinData(json);
+        console.log('loaded');
+      })
+      .catch((error) => console.error(error));
   }, []);
 
   useEffect(() => {
@@ -124,6 +127,13 @@ const DetailScreen = ({ route }) => {
       .catch((error) => console.error(error));
   }, [timeLable]);
 
+  useEffect(() => {
+    if (coinData !== null) {
+      if (coinData.error === undefined) setLoadingCoinData(false);
+      else console.log('Error!');
+    }
+  }, [coinData]);
+
   // const timestampToString = (timestamp) => {
   //   const date = new Date(timestamp);
   //   const hours = date.getHours();
@@ -132,44 +142,6 @@ const DetailScreen = ({ route }) => {
   //   const day = date.getDate();
   //   return `${month}/${day}\n${hours}:${minutes.substr(-2)}`;
   // };
-
-  const PriceDetail = () => (isLoadingCoinData ? (
-    <View>
-      <Text>Loading...</Text>
-    </View>
-  ) : (
-    <View
-      style={{
-        flex: 0.2,
-        flexDirection: 'row',
-        alignItems: 'center',
-        width: screenWidth * 0.9,
-      }}
-    >
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text style={{ fontSize: 8 }}>USD $</Text>
-        <Text style={{ fontSize: 28 }}>{coinData.market_data.current_price.usd}</Text>
-      </View>
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text style={{ fontSize: 8 }}>Last 24H</Text>
-        <Text
-          style={{
-            fontSize: 28,
-            backgroundColor:
-                coinData.market_data.price_change_percentage_24h_in_currency.usd >= 0
-                  ? 'red'
-                  : 'green',
-            padding: 3,
-            color: 'white',
-          }}
-        >
-          {coinData.market_data.price_change_percentage_24h_in_currency.usd >= 0 ? '+' : ''}
-          {coinData.market_data.price_change_percentage_24h_in_currency.usd.toFixed(2)}
-          %
-        </Text>
-      </View>
-    </View>
-  ));
 
   return (
     <View style={{ flex: 1, padding: 24 }}>
@@ -183,8 +155,19 @@ const DetailScreen = ({ route }) => {
             alignItems: 'center',
           }}
         >
-          <Text style={{ fontSize: 20 }}>{coinData.name}</Text>
-          <PriceDetail />
+          <Text>
+            Details of
+            {coinData.name}
+          </Text>
+          <Text>
+            NTD $
+            {coinData.market_data.current_price.twd}
+          </Text>
+          <Text>
+            USD $
+            {coinData.market_data.current_price.usd}
+          </Text>
+
           <View style={{ flexDirection: 'row', paddingTop: 10, paddingBottom: 20 }}>
             <TouchableOpacity
               style={{

@@ -10,6 +10,7 @@ export interface ApiCoins {
       usd: number;
     };
   };
+  error: string;
 }
 export interface ApiCoinsMarketChart {
   prices: Array<Array<number>>;
