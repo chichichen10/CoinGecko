@@ -48,15 +48,15 @@ function HomeScreen({ navigation }) {
   //       .finally(() => setLoading(false));
   //   }, []);
 
-  const textArrow = useCallback(() => (descending ? '↓' : '↑'), [descending]);
-  const textOrder = useCallback(() => (descending ? 'desc' : 'asc'), [descending]);
+  const textArrow = descending ? '↓' : '↑';
+  const textOrder = descending ? 'desc' : 'asc';
 
   useEffect(() => {
     console.log('run2');
     setLoading(true);
     console.log(`sortBy: ${sortBy} decending${descending}`);
     fetch(
-      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=${sortBy}_${textOrder()}&per_page=25&page=1&sparkline=false`,
+      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=${sortBy}_${textOrder}&per_page=25&page=1&sparkline=false`,
     )
       .then((response) => response.json())
       .then((json) => setData(json))
@@ -70,7 +70,7 @@ function HomeScreen({ navigation }) {
   useEffect(() => {
     if (isPulling) {
       fetch(
-        `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=${sortBy}_${textOrder()}&per_page=25&page=${
+        `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=${sortBy}_${textOrder}&per_page=25&page=${
           renderCount + 2
         }&sparkline=false`,
       )
@@ -95,7 +95,7 @@ function HomeScreen({ navigation }) {
   const refresh = useCallback(() => {
     setRefreshing(true);
     fetch(
-      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=${sortBy}_${textOrder()}&per_page=25&page=1&sparkline=false`,
+      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=${sortBy}_${textOrder}&per_page=25&page=1&sparkline=false`,
     )
       .then((response) => response.json())
       .then((json) => setData(json))
@@ -108,13 +108,14 @@ function HomeScreen({ navigation }) {
 
   const changeOrder = useCallback(
     (target) => {
+      console.log('called!!!!!');
       if (sortBy === target) setDescending(!descending);
       else {
         setSortBy(target);
         setDescending(true);
       }
     },
-    [sortBy],
+    [sortBy, descending],
   );
 
   // const renderFooter = () => {
@@ -150,7 +151,7 @@ function HomeScreen({ navigation }) {
           >
             Name
             {' '}
-            {sortBy === 'id' ? textArrow() : ''}
+            {sortBy === 'id' ? textArrow : ''}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => changeOrder('price')} style={{ width: '25%' }}>
@@ -162,7 +163,7 @@ function HomeScreen({ navigation }) {
           >
             Price
             {' '}
-            {sortBy === 'price' ? textArrow() : ''}
+            {sortBy === 'price' ? textArrow : ''}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => changeOrder('volume')} style={{ width: '25%' }}>
@@ -174,12 +175,12 @@ function HomeScreen({ navigation }) {
           >
             Volume
             {' '}
-            {sortBy === 'volume' ? textArrow() : ''}
+            {sortBy === 'volume' ? textArrow : ''}
           </Text>
         </TouchableOpacity>
       </View>
     ),
-    [sortBy],
+    [sortBy, descending],
   );
 
   return (
