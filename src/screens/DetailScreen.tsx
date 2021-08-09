@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   Text, View, Dimensions, ActivityIndicator, TouchableOpacity,
 } from 'react-native';
@@ -133,6 +133,8 @@ const DetailScreen = ({ route }) => {
   //   return `${month}/${day}\n${hours}:${minutes.substr(-2)}`;
   // };
 
+  const handleDataInterval = useCallback((days) => () => setDataInterval(days), []);
+
   const PriceDetail = () => (isLoadingCoinData ? (
     <View>
       <Text>Loading...</Text>
@@ -191,7 +193,7 @@ const DetailScreen = ({ route }) => {
                 backgroundColor: dataInterval === 7 ? '#198964' : '#7eb9d9',
                 padding: 10,
               }}
-              onPress={() => setDataInterval(7)}
+              onPress={handleDataInterval(7)}
             >
               <Text>7D</Text>
             </TouchableOpacity>
@@ -200,7 +202,7 @@ const DetailScreen = ({ route }) => {
                 backgroundColor: dataInterval === 3 ? '#198964' : '#7eb9d9',
                 padding: 10,
               }}
-              onPress={() => setDataInterval(3)}
+              onPress={handleDataInterval(3)}
             >
               <Text>3D</Text>
             </TouchableOpacity>
@@ -209,7 +211,7 @@ const DetailScreen = ({ route }) => {
                 backgroundColor: dataInterval === 1 ? '#198964' : '#7eb9d9',
                 padding: 10,
               }}
-              onPress={() => setDataInterval(1)}
+              onPress={handleDataInterval(1)}
             >
               <Text>24H</Text>
             </TouchableOpacity>

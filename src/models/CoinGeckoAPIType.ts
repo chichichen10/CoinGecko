@@ -14,3 +14,12 @@ export interface ApiCoins {
 export interface ApiCoinsMarketChart {
   prices: Array<Array<number>>;
 }
+export interface ApiCoinsMarket {
+  name: string;
+  id: string;
+  image: string;
+  symbol: string;
+  current_price: number;
+  market_cap: number;
+  total_volume: number;
+}

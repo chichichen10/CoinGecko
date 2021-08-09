@@ -1,8 +1,44 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import {
-  FlatList, Text, View, TouchableOpacity, ActivityIndicator, Platform,
+  FlatList,
+  Text,
+  View,
+  TouchableOpacity,
+  ActivityIndicator,
+  Platform,
+  StyleSheet,
+  Image,
 } from 'react-native';
 import LoadingComponent from '../components/LoadingComponent';
+import { ApiCoinsMarket } from '../models/CoinGeckoAPIType';
+
+const styles = StyleSheet.create({
+  logoContainer: {
+    width: '10%',
+    paddingLeft: 10,
+  },
+  logo: {
+    width: 30,
+    height: 30,
+  },
+  listContainer: {
+    backgroundColor: '#F0FBFC',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  headerContainer: {
+    backgroundColor: 'white',
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 50,
+  },
+  headerName: { width: '15%', marginLeft: '10%' },
+  headerPrice: { width: '25%' },
+  headerVolume: { width: '25%' },
+  name: { width: '15%', textAlign: 'center' },
+  price: { width: '25%', textAlign: 'center' },
+  volume: { width: '25%', textAlign: 'center' },
+});
 
 const Footer = React.memo((props: { isPulling: boolean; setPulling }) => {
   const { isPulling, setPulling } = props;
@@ -28,7 +64,7 @@ const Footer = React.memo((props: { isPulling: boolean; setPulling }) => {
 
 function HomeScreen({ navigation }) {
   const [isLoading, setLoading] = useState(true);
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<ApiCoinsMarket[]>([]);
   // const [moreData, setMoreData] = useState([]);
   const [sortBy, setSortBy] = useState('market_cap');
   const [descending, setDescending] = useState(true);
@@ -134,15 +170,8 @@ function HomeScreen({ navigation }) {
 
   const HeaderComponent = useCallback(
     () => (
-      <View
-        style={{
-          backgroundColor: 'white',
-          flexDirection: 'row',
-          alignItems: 'center',
-          height: 50,
-        }}
-      >
-        <TouchableOpacity onPress={() => changeOrder('id')} style={{ width: '25%' }}>
+      <View style={styles.headerContainer}>
+        <TouchableOpacity onPress={() => changeOrder('id')} style={styles.headerName}>
           <Text
             style={{
               fontWeight: sortBy === 'id' ? 'bold' : 'normal',
@@ -154,7 +183,7 @@ function HomeScreen({ navigation }) {
             {sortBy === 'id' ? textArrow : ''}
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => changeOrder('price')} style={{ width: '25%' }}>
+        <TouchableOpacity onPress={() => changeOrder('price')} style={styles.headerPrice}>
           <Text
             style={{
               fontWeight: sortBy === 'price' ? 'bold' : 'normal',
@@ -166,7 +195,7 @@ function HomeScreen({ navigation }) {
             {sortBy === 'price' ? textArrow : ''}
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => changeOrder('volume')} style={{ width: '25%' }}>
+        <TouchableOpacity onPress={() => changeOrder('volume')} style={styles.headerVolume}>
           <Text
             style={{
               fontWeight: sortBy === 'volume' ? 'bold' : 'normal',
@@ -181,6 +210,11 @@ function HomeScreen({ navigation }) {
       </View>
     ),
     [sortBy, descending],
+  );
+
+  const handlePress = useCallback(
+    (item) => () => navigation.navigate('Detail', { id: item.id }),
+    [data],
   );
 
   return (
@@ -201,24 +235,13 @@ function HomeScreen({ navigation }) {
             ItemSeparatorComponent={DevideLine}
             ListHeaderComponent={HeaderComponent}
             renderItem={({ item }) => (
-              <View
-                style={{
-                  backgroundColor: '#F0FBFC',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                }}
-              >
-                <Text
-                  style={{
-                    fontWeight: 'bold',
-                    width: '25%',
-                    textAlign: 'center',
-                  }}
-                >
-                  {item.id}
-                </Text>
-                <Text style={{ width: '25%', textAlign: 'center' }}>{item.current_price}</Text>
-                <Text style={{ width: '25%', textAlign: 'center' }}>{item.total_volume}</Text>
+              <View style={styles.listContainer}>
+                <View style={styles.logoContainer}>
+                  <Image style={styles.logo} source={{ uri: item.image }} />
+                </View>
+                <Text style={styles.name}>{item.symbol}</Text>
+                <Text style={styles.price}>{item.current_price}</Text>
+                <Text style={styles.volume}>{item.total_volume}</Text>
                 <TouchableOpacity
                   style={{
                     alignItems: 'center',
@@ -226,7 +249,7 @@ function HomeScreen({ navigation }) {
                     padding: 10,
                     backgroundColor: 'gray',
                   }}
-                  onPress={() => navigation.navigate('Detail', { id: item.id })}
+                  onPress={handlePress(item)}
                 >
                   <Text>DETAIL</Text>
                 </TouchableOpacity>
