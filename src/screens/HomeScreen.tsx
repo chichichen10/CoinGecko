@@ -13,6 +13,44 @@ import LoadingComponent from '../components/LoadingComponent';
 import { ApiCoinsMarket } from '../models/CoinGeckoAPIType';
 
 const styles = StyleSheet.create({
+  listContainer: {
+    backgroundColor: '#F0FBFC',
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 65,
+  },
+  headerContainer: {
+    backgroundColor: 'white',
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 50,
+  },
+  headerRank: {
+    width: '10%',
+    paddingLeft: 10,
+  },
+  headerName: {
+    width: '25%',
+    marginLeft: 10,
+    textAlign: 'center',
+  },
+  headerPrice: {
+    width: '25%',
+    textAlign: 'right',
+    paddingRight: 15,
+  },
+  headerVolume: {
+    width: '30%',
+    textAlign: 'right',
+  },
+  headerText: {
+    textAlign: 'right',
+  },
+  rank: {
+    width: '10%',
+    paddingLeft: 10,
+    textAlign: 'center',
+  },
   logoContainer: {
     width: '10%',
     paddingLeft: 10,
@@ -21,23 +59,24 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
   },
-  listContainer: {
-    backgroundColor: '#F0FBFC',
-    flexDirection: 'row',
-    alignItems: 'center',
+  name: {
+    width: '15%',
+    textAlign: 'left',
+    marginLeft: 10,
   },
-  headerContainer: {
-    backgroundColor: 'white',
-    flexDirection: 'row',
-    alignItems: 'center',
-    height: 50,
+  price: {
+    width: '25%',
+    textAlign: 'right',
+    paddingRight: 15,
   },
-  headerName: { width: '15%', marginLeft: '10%' },
-  headerPrice: { width: '25%' },
-  headerVolume: { width: '25%' },
-  name: { width: '15%', textAlign: 'center' },
-  price: { width: '25%', textAlign: 'center' },
-  volume: { width: '25%', textAlign: 'center' },
+  volume: {
+    width: '30%',
+    textAlign: 'right',
+  },
+  pullText: {
+    width: '80%',
+    textAlign: 'center',
+  },
 });
 
 const Footer = React.memo((props: { isPulling: boolean; setPulling }) => {
@@ -45,7 +84,7 @@ const Footer = React.memo((props: { isPulling: boolean; setPulling }) => {
   if (Platform.OS === 'web') {
     return !isPulling ? (
       <TouchableOpacity style={{ padding: 10 }} onPress={() => setPulling(true)}>
-        <Text style={{ width: '80%', textAlign: 'center' }}>click for more</Text>
+        <Text style={styles.pullText}>click for more</Text>
       </TouchableOpacity>
     ) : (
       <View>
@@ -54,7 +93,7 @@ const Footer = React.memo((props: { isPulling: boolean; setPulling }) => {
     );
   }
   return !isPulling ? (
-    <Text style={{ width: '100%', textAlign: 'center' }}>Pull for more</Text>
+    <Text style={styles.pullText}>Pull for more</Text>
   ) : (
     <View>
       <ActivityIndicator animating size="large" color="#0000ff" />
@@ -171,24 +210,35 @@ function HomeScreen({ navigation }) {
   const HeaderComponent = useCallback(
     () => (
       <View style={styles.headerContainer}>
+        <TouchableOpacity onPress={() => changeOrder('market_cap')} style={styles.headerRank}>
+          <Text
+            style={{
+              fontWeight: sortBy === 'market_cap' ? 'bold' : 'normal',
+              textAlign: 'center',
+            }}
+          >
+            #
+          </Text>
+        </TouchableOpacity>
         <TouchableOpacity onPress={() => changeOrder('id')} style={styles.headerName}>
           <Text
             style={{
               fontWeight: sortBy === 'id' ? 'bold' : 'normal',
-              textAlign: 'center',
             }}
           >
-            Name
+            Coin
             {' '}
             {sortBy === 'id' ? textArrow : ''}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => changeOrder('price')} style={styles.headerPrice}>
           <Text
-            style={{
-              fontWeight: sortBy === 'price' ? 'bold' : 'normal',
-              textAlign: 'center',
-            }}
+            style={[
+              {
+                fontWeight: sortBy === 'price' ? 'bold' : 'normal',
+              },
+              styles.headerText,
+            ]}
           >
             Price
             {' '}
@@ -197,10 +247,12 @@ function HomeScreen({ navigation }) {
         </TouchableOpacity>
         <TouchableOpacity onPress={() => changeOrder('volume')} style={styles.headerVolume}>
           <Text
-            style={{
-              fontWeight: sortBy === 'volume' ? 'bold' : 'normal',
-              textAlign: 'center',
-            }}
+            style={[
+              {
+                fontWeight: sortBy === 'volume' ? 'bold' : 'normal',
+              },
+              styles.headerText,
+            ]}
           >
             Volume
             {' '}
@@ -235,25 +287,15 @@ function HomeScreen({ navigation }) {
             ItemSeparatorComponent={DevideLine}
             ListHeaderComponent={HeaderComponent}
             renderItem={({ item }) => (
-              <View style={styles.listContainer}>
+              <TouchableOpacity style={styles.listContainer} onPress={handlePress(item)}>
+                <Text style={styles.rank}>{item.market_cap_rank}</Text>
                 <View style={styles.logoContainer}>
                   <Image style={styles.logo} source={{ uri: item.image }} />
                 </View>
                 <Text style={styles.name}>{item.symbol}</Text>
-                <Text style={styles.price}>{item.current_price}</Text>
-                <Text style={styles.volume}>{item.total_volume}</Text>
-                <TouchableOpacity
-                  style={{
-                    alignItems: 'center',
-                    marginLeft: 10,
-                    padding: 10,
-                    backgroundColor: 'gray',
-                  }}
-                  onPress={handlePress(item)}
-                >
-                  <Text>DETAIL</Text>
-                </TouchableOpacity>
-              </View>
+                <Text style={styles.price}>{item.current_price.toLocaleString('en')}</Text>
+                <Text style={styles.volume}>{item.total_volume.toLocaleString('en')}</Text>
+              </TouchableOpacity>
             )}
             onEndReachedThreshold={0.1}
             onEndReached={fetchMore}

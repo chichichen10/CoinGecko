@@ -22,4 +22,5 @@ export interface ApiCoinsMarket {
   current_price: number;
   market_cap: number;
   total_volume: number;
+  market_cap_rank: number;
 }
