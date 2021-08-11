@@ -1,10 +1,19 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import {
-  Text, View, Dimensions, ActivityIndicator, TouchableOpacity,
+  Text,
+  View,
+  Dimensions,
+  ActivityIndicator,
+  TouchableOpacity,
+  StyleSheet,
 } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import LoadingComponent from '../components/LoadingComponent';
 import { ApiCoins, ApiCoinsMarketChart } from '../models/CoinGeckoAPIType';
+
+const styles = StyleSheet.create({
+  chart: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+});
 
 const DetailScreen = ({ route }) => {
   const [isLoadingCoinData, setLoadingCoinData] = useState(true);
@@ -38,11 +47,11 @@ const DetailScreen = ({ route }) => {
   };
 
   const PriceChart = () => (isLoadingMarketData ? (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+    <View style={styles.chart}>
       <ActivityIndicator animating size="large" color="#0000ff" />
     </View>
   ) : (
-    <View style={{ flex: 1 }}>
+    <View>
       <LineChart
         data={{
           labels: timeLable,

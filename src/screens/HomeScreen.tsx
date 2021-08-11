@@ -68,6 +68,7 @@ const styles = StyleSheet.create({
     width: '25%',
     textAlign: 'right',
     paddingRight: 15,
+    flexDirection: 'column',
   },
   volume: {
     width: '30%',
@@ -76,6 +77,14 @@ const styles = StyleSheet.create({
   pullText: {
     width: '80%',
     textAlign: 'center',
+  },
+  currentPrice: {
+    fontSize: 16,
+    flex: 2,
+  },
+  priceChange: {
+    fontSize: 8,
+    flex: 1,
   },
 });
 
@@ -293,7 +302,19 @@ function HomeScreen({ navigation }) {
                   <Image style={styles.logo} source={{ uri: item.image }} />
                 </View>
                 <Text style={styles.name}>{item.symbol}</Text>
-                <Text style={styles.price}>{item.current_price.toLocaleString('en')}</Text>
+                <View style={styles.price}>
+                  <Text style={styles.currentPrice}>{item.current_price.toLocaleString('en')}</Text>
+                  <Text
+                    style={[
+                      styles.priceChange,
+                      { color: item.price_change_percentage_24h >= 0 ? 'red' : 'green' },
+                    ]}
+                  >
+                    {item.price_change_percentage_24h > 0 ? '+' : ''}
+                    {item.price_change_percentage_24h.toFixed(2)}
+                    %
+                  </Text>
+                </View>
                 <Text style={styles.volume}>{item.total_volume.toLocaleString('en')}</Text>
               </TouchableOpacity>
             )}
