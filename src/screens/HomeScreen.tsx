@@ -66,7 +66,6 @@ const styles = StyleSheet.create({
   },
   price: {
     width: '25%',
-    textAlign: 'right',
     paddingRight: 15,
     flexDirection: 'column',
   },
@@ -80,11 +79,13 @@ const styles = StyleSheet.create({
   },
   currentPrice: {
     fontSize: 16,
-    flex: 2,
+    textAlign: 'right',
+    justifyContent: 'center',
   },
   priceChange: {
     fontSize: 8,
-    flex: 1,
+    textAlign: 'right',
+    marginTop: 10,
   },
 });
 

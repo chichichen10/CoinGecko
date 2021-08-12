@@ -12,7 +12,28 @@ import LoadingComponent from '../components/LoadingComponent';
 import { ApiCoins, ApiCoinsMarketChart } from '../models/CoinGeckoAPIType';
 
 const styles = StyleSheet.create({
+  title: { flex: 2, marginTop: '5%', fontSize: 28 },
+  chartContainer: { flex: 18 },
   chart: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  priceContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  labelText: { fontSize: 8 },
+  priceText: { fontSize: 28 },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  activityIndicator: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  priceDetail: {
+    flex: 3,
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '90%',
+  },
 });
 
 const DetailScreen = ({ route }) => {
@@ -47,11 +68,16 @@ const DetailScreen = ({ route }) => {
   };
 
   const PriceChart = () => (isLoadingMarketData ? (
-    <View style={styles.chart}>
-      <ActivityIndicator animating size="large" color="#0000ff" />
+    <View style={styles.chartContainer}>
+      <ActivityIndicator
+        animating
+        size="large"
+        color="#0000ff"
+        style={styles.activityIndicator}
+      />
     </View>
   ) : (
-    <View>
+    <View style={styles.chartContainer}>
       <LineChart
         data={{
           labels: timeLable,
@@ -149,20 +175,13 @@ const DetailScreen = ({ route }) => {
       <Text>Loading...</Text>
     </View>
   ) : (
-    <View
-      style={{
-        flex: 0.2,
-        flexDirection: 'row',
-        alignItems: 'center',
-        width: screenWidth * 0.9,
-      }}
-    >
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text style={{ fontSize: 8 }}>USD $</Text>
-        <Text style={{ fontSize: 28 }}>{coinData.market_data.current_price.usd}</Text>
+    <View style={styles.priceDetail}>
+      <View style={styles.priceContainer}>
+        <Text style={styles.labelText}>USD $</Text>
+        <Text style={styles.priceText}>{coinData.market_data.current_price.usd}</Text>
       </View>
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text style={{ fontSize: 8 }}>Last 24H</Text>
+      <View style={styles.priceContainer}>
+        <Text style={styles.labelText}>Last 24H</Text>
         <Text
           style={{
             fontSize: 28,
@@ -183,18 +202,12 @@ const DetailScreen = ({ route }) => {
   ));
 
   return (
-    <View style={{ flex: 1, padding: 24 }}>
+    <View style={styles.container}>
       {isLoadingCoinData ? (
         <LoadingComponent />
       ) : (
-        <View
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <Text style={{ fontSize: 20 }}>{coinData.name}</Text>
+        <View style={styles.container}>
+          <Text style={styles.title}>{coinData.name}</Text>
           <PriceDetail />
           <View style={{ flexDirection: 'row', paddingTop: 10, paddingBottom: 20 }}>
             <TouchableOpacity
