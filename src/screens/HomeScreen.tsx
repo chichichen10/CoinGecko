@@ -26,51 +26,60 @@ const styles = StyleSheet.create({
     height: 50,
   },
   headerRank: {
-    width: '10%',
+    width: 20,
     paddingLeft: 10,
   },
   headerName: {
-    width: '25%',
-    marginLeft: 10,
+    flex: 1.5,
+    marginLeft: 35,
     textAlign: 'center',
   },
   headerPrice: {
-    width: '25%',
-    textAlign: 'right',
-    paddingRight: 15,
+    flex: 3,
+    textAlign: 'center',
+    marginRight: 15,
   },
   headerVolume: {
-    width: '30%',
-    textAlign: 'right',
+    flex: 3,
+    textAlign: 'center',
+    marginRight: 15,
   },
   headerText: {
     textAlign: 'right',
   },
   rank: {
-    width: '10%',
-    paddingLeft: 10,
+    width: 20,
+    paddingLeft: 5,
     textAlign: 'center',
+    fontFamily: 'Courier New',
+    fontSize: 10,
   },
   logoContainer: {
-    width: '10%',
+    width: 25,
     paddingLeft: 10,
   },
   logo: {
-    width: 30,
-    height: 30,
+    width: 20,
+    height: 20,
   },
   name: {
-    width: '15%',
+    flex: 1.5,
     textAlign: 'left',
     marginLeft: 10,
+    fontSize: 20,
+    fontFamily: 'Courier New',
+    fontWeight: 'bold',
   },
   price: {
-    width: '25%',
-    paddingRight: 15,
+    flex: 3,
+    justifyContent: 'flex-end',
+    paddingRight: 25,
     flexDirection: 'column',
+    fontFamily: 'Courier New',
   },
   volume: {
-    width: '30%',
+    flex: 3,
+    marginRight: 10,
     textAlign: 'right',
   },
   pullText: {
@@ -78,14 +87,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   currentPrice: {
-    fontSize: 16,
+    marginTop: 30,
+    fontSize: 24,
     textAlign: 'right',
     justifyContent: 'center',
   },
   priceChange: {
-    fontSize: 8,
+    fontSize: 14,
     textAlign: 'right',
-    marginTop: 10,
   },
 });
 
@@ -279,6 +288,34 @@ function HomeScreen({ navigation }) {
     [data],
   );
 
+  const renderItem = ({ item }) => (
+    <TouchableOpacity style={styles.listContainer} onPress={handlePress(item)}>
+      <Text style={styles.rank}>{item.market_cap_rank}</Text>
+      <View style={styles.logoContainer}>
+        <Image style={styles.logo} source={{ uri: item.image }} />
+      </View>
+      <Text style={styles.name}>{item.symbol.toUpperCase()}</Text>
+      <View style={styles.price}>
+        <Text style={styles.currentPrice}>
+          {item.current_price.toFixed(2).toLocaleString('en')}
+        </Text>
+        <Text
+          style={[
+            styles.priceChange,
+            { color: item.price_change_percentage_24h >= 0 ? 'red' : 'green' },
+          ]}
+        >
+          {item.price_change_percentage_24h > 0 ? '+' : ''}
+          {item.price_change_percentage_24h.toFixed(2)}
+          %
+        </Text>
+      </View>
+      <Text style={styles.volume}>{item.total_volume.toLocaleString('en')}</Text>
+    </TouchableOpacity>
+  );
+
+  const keyExtractor = useCallback((item, index) => index.toString(), []);
+
   return (
     <View style={{ flex: 1 }}>
       {isLoading ? (
@@ -293,32 +330,10 @@ function HomeScreen({ navigation }) {
         >
           <FlatList
             data={data}
-            keyExtractor={(item, index) => index.toString()}
+            keyExtractor={keyExtractor}
             ItemSeparatorComponent={DevideLine}
             ListHeaderComponent={HeaderComponent}
-            renderItem={({ item }) => (
-              <TouchableOpacity style={styles.listContainer} onPress={handlePress(item)}>
-                <Text style={styles.rank}>{item.market_cap_rank}</Text>
-                <View style={styles.logoContainer}>
-                  <Image style={styles.logo} source={{ uri: item.image }} />
-                </View>
-                <Text style={styles.name}>{item.symbol}</Text>
-                <View style={styles.price}>
-                  <Text style={styles.currentPrice}>{item.current_price.toLocaleString('en')}</Text>
-                  <Text
-                    style={[
-                      styles.priceChange,
-                      { color: item.price_change_percentage_24h >= 0 ? 'red' : 'green' },
-                    ]}
-                  >
-                    {item.price_change_percentage_24h > 0 ? '+' : ''}
-                    {item.price_change_percentage_24h.toFixed(2)}
-                    %
-                  </Text>
-                </View>
-                <Text style={styles.volume}>{item.total_volume.toLocaleString('en')}</Text>
-              </TouchableOpacity>
-            )}
+            renderItem={renderItem}
             onEndReachedThreshold={0.1}
             onEndReached={fetchMore}
             ListFooterComponent={<Footer isPulling={isPulling} setPulling={setPulling} />}
