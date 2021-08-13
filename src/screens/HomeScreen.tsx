@@ -13,6 +13,11 @@ import LoadingComponent from '../components/LoadingComponent';
 import { ApiCoinsMarket } from '../models/CoinGeckoAPIType';
 
 const styles = StyleSheet.create({
+  page: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+  },
   listContainer: {
     backgroundColor: '#F0FBFC',
     flexDirection: 'row',
@@ -48,10 +53,10 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   rank: {
-    width: 20,
+    width: 25,
     paddingLeft: 5,
     textAlign: 'center',
-    fontFamily: 'Courier New',
+    // fontFamily: 'Courier New',
     fontSize: 10,
   },
   logoContainer: {
@@ -66,8 +71,8 @@ const styles = StyleSheet.create({
     flex: 1.5,
     textAlign: 'left',
     marginLeft: 10,
-    fontSize: 20,
-    fontFamily: 'Courier New',
+    fontSize: 16,
+    // fontFamily: 'Courier New',
     fontWeight: 'bold',
   },
   price: {
@@ -75,7 +80,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     paddingRight: 25,
     flexDirection: 'column',
-    fontFamily: 'Courier New',
   },
   volume: {
     flex: 3,
@@ -88,7 +92,7 @@ const styles = StyleSheet.create({
   },
   currentPrice: {
     marginTop: 30,
-    fontSize: 24,
+    fontSize: 20,
     textAlign: 'right',
     justifyContent: 'center',
   },
@@ -226,10 +230,15 @@ function HomeScreen({ navigation }) {
     [],
   );
 
+  const handlePressOrder = useCallback(
+    (orderBy) => () => changeOrder(orderBy),
+    [sortBy, descending],
+  );
+
   const HeaderComponent = useCallback(
     () => (
       <View style={styles.headerContainer}>
-        <TouchableOpacity onPress={() => changeOrder('market_cap')} style={styles.headerRank}>
+        <TouchableOpacity onPress={handlePressOrder('market_cap')} style={styles.headerRank}>
           <Text
             style={{
               fontWeight: sortBy === 'market_cap' ? 'bold' : 'normal',
@@ -239,7 +248,7 @@ function HomeScreen({ navigation }) {
             #
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => changeOrder('id')} style={styles.headerName}>
+        <TouchableOpacity onPress={handlePressOrder('id')} style={styles.headerName}>
           <Text
             style={{
               fontWeight: sortBy === 'id' ? 'bold' : 'normal',
@@ -250,7 +259,7 @@ function HomeScreen({ navigation }) {
             {sortBy === 'id' ? textArrow : ''}
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => changeOrder('price')} style={styles.headerPrice}>
+        <TouchableOpacity onPress={handlePressOrder('price')} style={styles.headerPrice}>
           <Text
             style={[
               {
@@ -264,7 +273,7 @@ function HomeScreen({ navigation }) {
             {sortBy === 'price' ? textArrow : ''}
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => changeOrder('volume')} style={styles.headerVolume}>
+        <TouchableOpacity onPress={handlePressOrder('volume')} style={styles.headerVolume}>
           <Text
             style={[
               {
@@ -288,46 +297,50 @@ function HomeScreen({ navigation }) {
     [data],
   );
 
-  const renderItem = ({ item }) => (
-    <TouchableOpacity style={styles.listContainer} onPress={handlePress(item)}>
-      <Text style={styles.rank}>{item.market_cap_rank}</Text>
-      <View style={styles.logoContainer}>
-        <Image style={styles.logo} source={{ uri: item.image }} />
-      </View>
-      <Text style={styles.name}>{item.symbol.toUpperCase()}</Text>
-      <View style={styles.price}>
-        <Text style={styles.currentPrice}>
-          {item.current_price.toFixed(2).toLocaleString('en')}
+  const convertNull = useCallback((num) => (num === null ? 0 : num), []);
+
+  const renderItem = useCallback(
+    ({ item }) => (
+      <TouchableOpacity style={styles.listContainer} onPress={handlePress(item)}>
+        <Text style={styles.rank} numberOfLines={1}>
+          {item.market_cap_rank}
         </Text>
-        <Text
-          style={[
-            styles.priceChange,
-            { color: item.price_change_percentage_24h >= 0 ? 'red' : 'green' },
-          ]}
-        >
-          {item.price_change_percentage_24h > 0 ? '+' : ''}
-          {item.price_change_percentage_24h.toFixed(2)}
-          %
-        </Text>
-      </View>
-      <Text style={styles.volume}>{item.total_volume.toLocaleString('en')}</Text>
-    </TouchableOpacity>
+        <View style={styles.logoContainer}>
+          <Image style={styles.logo} source={{ uri: item.image }} />
+        </View>
+        <Text style={styles.name}>{item.symbol.toUpperCase()}</Text>
+        <View style={styles.price}>
+          <Text style={styles.currentPrice}>
+            {convertNull(item.current_price).toLocaleString('en', {
+              style: 'currency',
+              currency: 'USD',
+            })}
+          </Text>
+          <Text
+            style={[
+              styles.priceChange,
+              { color: item.price_change_percentage_24h >= 0 ? 'red' : 'green' },
+            ]}
+          >
+            {item.price_change_percentage_24h > 0 ? '+' : ''}
+            {convertNull(item.price_change_percentage_24h).toFixed(2)}
+            %
+          </Text>
+        </View>
+        <Text style={styles.volume}>{item.total_volume.toLocaleString('en')}</Text>
+      </TouchableOpacity>
+    ),
+    [data],
   );
 
   const keyExtractor = useCallback((item, index) => index.toString(), []);
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.page}>
       {isLoading ? (
         <LoadingComponent />
       ) : (
-        <View
-          style={{
-            flex: 1,
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-          }}
-        >
+        <View style={styles.page}>
           <FlatList
             data={data}
             keyExtractor={keyExtractor}
