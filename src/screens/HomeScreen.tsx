@@ -20,7 +20,6 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     backgroundColor: '#F0FBFC',
-    flexDirection: 'row',
     alignItems: 'center',
     height: 65,
   },
@@ -31,37 +30,37 @@ const styles = StyleSheet.create({
     height: 50,
   },
   headerRank: {
-    width: 20,
+    width: 25,
     paddingLeft: 10,
   },
   headerName: {
     flex: 1.5,
-    marginLeft: 35,
-    textAlign: 'center',
+    marginLeft: 10,
+    textAlign: 'left',
   },
   headerPrice: {
     flex: 3,
     textAlign: 'center',
-    marginRight: 15,
+    paddingRight: 15,
   },
   headerVolume: {
-    flex: 3,
+    flex: 3.2,
     textAlign: 'center',
-    marginRight: 15,
+    marginRight: 10,
   },
   headerText: {
     textAlign: 'right',
   },
-  rank: {
-    width: 25,
-    paddingLeft: 5,
-    textAlign: 'center',
-    // fontFamily: 'Courier New',
-    fontSize: 10,
-  },
   logoContainer: {
     width: 25,
     paddingLeft: 10,
+    alignItems: 'center',
+  },
+  rank: {
+    width: 25,
+    paddingLeft: 10,
+    textAlign: 'center',
+    fontSize: 10,
   },
   logo: {
     width: 20,
@@ -75,30 +74,67 @@ const styles = StyleSheet.create({
     // fontFamily: 'Courier New',
     fontWeight: 'bold',
   },
-  price: {
+  fullName: {
+    flex: 1.5,
+    textAlign: 'left',
+    marginLeft: 10,
+    fontSize: 12,
+    // fontFamily: 'Courier New',
+  },
+  // price: {
+  //   flex: 3,
+  //   justifyContent: 'flex-end',
+  //   paddingRight: 25,
+  //   flexDirection: 'column',
+  // },
+
+  currentPrice: {
     flex: 3,
     justifyContent: 'flex-end',
-    paddingRight: 25,
-    flexDirection: 'column',
+    paddingRight: 15,
+    fontSize: 20,
+    textAlign: 'right',
+  },
+  priceChange: {
+    flex: 3,
+    justifyContent: 'flex-end',
+    paddingRight: 15,
+    fontSize: 14,
+    textAlign: 'right',
   },
   volume: {
-    flex: 3,
+    flex: 3.2,
     marginRight: 10,
     textAlign: 'right',
+    fontSize: 15,
+    flexWrap: 'nowrap',
+  },
+  volume_down: {
+    flex: 3.2,
+    marginRight: 10,
+    textAlign: 'right',
+  },
+  contentContainerStyle: {
+    padding: 10,
   },
   pullText: {
     width: '80%',
     textAlign: 'center',
   },
-  currentPrice: {
-    marginTop: 30,
-    fontSize: 20,
-    textAlign: 'right',
-    justifyContent: 'center',
+  clickForMore: {
+    padding: 15,
   },
-  priceChange: {
-    fontSize: 14,
-    textAlign: 'right',
+  listContentUpper: {
+    flexDirection: 'row',
+    flex: 3,
+    alignItems: 'baseline',
+    marginTop: 10,
+  },
+  listContentLower: {
+    flexDirection: 'row',
+    flex: 2,
+    alignItems: 'baseline',
+    marginBottom: 10,
   },
 });
 
@@ -106,7 +142,7 @@ const Footer = React.memo((props: { isPulling: boolean; setPulling }) => {
   const { isPulling, setPulling } = props;
   if (Platform.OS === 'web') {
     return !isPulling ? (
-      <TouchableOpacity style={{ padding: 10 }} onPress={() => setPulling(true)}>
+      <TouchableOpacity style={styles.clickForMore} onPress={() => setPulling(true)}>
         <Text style={styles.pullText}>click for more</Text>
       </TouchableOpacity>
     ) : (
@@ -133,18 +169,6 @@ function HomeScreen({ navigation }) {
   const [refreshing, setRefreshing] = useState(false);
   const [renderCount, setRenderCount] = useState(0);
   const [isPulling, setPulling] = useState(false);
-  // const [initRneder, setInitRneder] = useState(true);
-
-  //   useEffect(() => {
-  //     console.log("run1");
-  //     fetch(
-  //       "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=price_desc&per_page=25&page=1&sparkline=false"
-  //     )
-  //       .then((response) => response.json())
-  //       .then((json) => setData(json))
-  //       .catch((error) => console.error(error))
-  //       .finally(() => setLoading(false));
-  //   }, []);
 
   const textArrow = descending ? '↓' : '↑';
   const textOrder = descending ? 'desc' : 'asc';
@@ -215,15 +239,6 @@ function HomeScreen({ navigation }) {
     },
     [sortBy, descending],
   );
-
-  // const renderFooter = () => {
-  //     return (!isPulling ?
-  //         <Text style={{ width: "100%", textAlign: "center" }}>Pull for more</Text> :
-  //         <View>
-  //             <ActivityIndicator animating size="large" />
-  //         </View>
-  //     )
-  // }
 
   const DevideLine = useCallback(
     () => <View style={{ height: 1, backgroundColor: 'skyblue' }} />,
@@ -302,19 +317,29 @@ function HomeScreen({ navigation }) {
   const renderItem = useCallback(
     ({ item }) => (
       <TouchableOpacity style={styles.listContainer} onPress={handlePress(item)}>
-        <Text style={styles.rank} numberOfLines={1}>
-          {item.market_cap_rank}
-        </Text>
-        <View style={styles.logoContainer}>
-          <Image style={styles.logo} source={{ uri: item.image }} />
-        </View>
-        <Text style={styles.name}>{item.symbol.toUpperCase()}</Text>
-        <View style={styles.price}>
-          <Text style={styles.currentPrice}>
+        <View style={styles.listContentUpper}>
+          <View style={styles.logoContainer}>
+            <Image style={styles.logo} source={{ uri: item.image }} />
+          </View>
+          <Text style={styles.name} numberOfLines={1}>
+            {item.symbol.toUpperCase()}
+          </Text>
+          <Text style={styles.currentPrice} numberOfLines={1}>
             {convertNull(item.current_price).toLocaleString('en', {
               style: 'currency',
               currency: 'USD',
             })}
+          </Text>
+          <Text style={styles.volume} numberOfLines={1}>
+            {item.total_volume.toLocaleString('en')}
+          </Text>
+        </View>
+        <View style={styles.listContentLower}>
+          <Text style={styles.rank} numberOfLines={1}>
+            {item.market_cap_rank}
+          </Text>
+          <Text style={styles.fullName} numberOfLines={1}>
+            {item.name}
           </Text>
           <Text
             style={[
@@ -326,8 +351,8 @@ function HomeScreen({ navigation }) {
             {convertNull(item.price_change_percentage_24h).toFixed(2)}
             %
           </Text>
+          <Text style={styles.volume_down}>test</Text>
         </View>
-        <Text style={styles.volume}>{item.total_volume.toLocaleString('en')}</Text>
       </TouchableOpacity>
     ),
     [data],
@@ -352,7 +377,7 @@ function HomeScreen({ navigation }) {
             ListFooterComponent={<Footer isPulling={isPulling} setPulling={setPulling} />}
             onRefresh={refresh}
             refreshing={refreshing}
-            contentContainerStyle={{ padding: 10 }}
+            contentContainerStyle={styles.contentContainerStyle}
           />
         </View>
       )}

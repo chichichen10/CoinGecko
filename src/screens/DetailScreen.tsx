@@ -34,6 +34,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '90%',
   },
+  timeSwitch: {
+    flexDirection: 'row',
+    paddingTop: 10,
+    paddingBottom: 20,
+  },
+  priceIndicator: {
+    fontSize: 28,
+    padding: 3,
+    color: 'white',
+  },
+  timeOption: {
+    padding: 10,
+  },
 });
 
 const DetailScreen = ({ route }) => {
@@ -183,15 +196,15 @@ const DetailScreen = ({ route }) => {
       <View style={styles.priceContainer}>
         <Text style={styles.labelText}>Last 24H</Text>
         <Text
-          style={{
-            fontSize: 28,
-            backgroundColor:
-                coinData.market_data.price_change_percentage_24h_in_currency.usd >= 0
-                  ? 'red'
-                  : 'green',
-            padding: 3,
-            color: 'white',
-          }}
+          style={[
+            {
+              backgroundColor:
+                  coinData.market_data.price_change_percentage_24h_in_currency.usd >= 0
+                    ? 'red'
+                    : 'green',
+            },
+            styles.priceIndicator,
+          ]}
         >
           {coinData.market_data.price_change_percentage_24h_in_currency.usd >= 0 ? '+' : ''}
           {coinData.market_data.price_change_percentage_24h_in_currency.usd.toFixed(2)}
@@ -209,30 +222,36 @@ const DetailScreen = ({ route }) => {
         <View style={styles.container}>
           <Text style={styles.title}>{coinData.name}</Text>
           <PriceDetail />
-          <View style={{ flexDirection: 'row', paddingTop: 10, paddingBottom: 20 }}>
+          <View style={styles.timeSwitch}>
             <TouchableOpacity
-              style={{
-                backgroundColor: dataInterval === 7 ? '#198964' : '#7eb9d9',
-                padding: 10,
-              }}
+              style={[
+                {
+                  backgroundColor: dataInterval === 7 ? '#198964' : '#7eb9d9',
+                },
+                styles.timeOption,
+              ]}
               onPress={handleDataInterval(7)}
             >
               <Text>7D</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={{
-                backgroundColor: dataInterval === 3 ? '#198964' : '#7eb9d9',
-                padding: 10,
-              }}
+              style={[
+                {
+                  backgroundColor: dataInterval === 3 ? '#198964' : '#7eb9d9',
+                },
+                styles.timeOption,
+              ]}
               onPress={handleDataInterval(3)}
             >
               <Text>3D</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={{
-                backgroundColor: dataInterval === 1 ? '#198964' : '#7eb9d9',
-                padding: 10,
-              }}
+              style={[
+                {
+                  backgroundColor: dataInterval === 1 ? '#198964' : '#7eb9d9',
+                },
+                styles.timeOption,
+              ]}
               onPress={handleDataInterval(1)}
             >
               <Text>24H</Text>
