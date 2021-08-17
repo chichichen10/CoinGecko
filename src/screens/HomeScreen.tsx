@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
   },
   headerName: {
-    flex: 1.5,
+    flex: 1.2,
     marginLeft: 10,
     textAlign: 'left',
   },
@@ -63,19 +63,20 @@ const styles = StyleSheet.create({
     fontSize: 10,
   },
   logo: {
-    width: 20,
-    height: 20,
+    width: 15,
+    height: 15,
   },
   name: {
-    flex: 1.5,
+    flex: 1.2,
     textAlign: 'left',
     marginLeft: 10,
     fontSize: 16,
     // fontFamily: 'Courier New',
     fontWeight: 'bold',
+    flexWrap: 'nowrap',
   },
   fullName: {
-    flex: 1.5,
+    flex: 2.2,
     textAlign: 'left',
     marginLeft: 10,
     fontSize: 12,
@@ -96,7 +97,7 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   priceChange: {
-    flex: 3,
+    flex: 2,
     justifyContent: 'flex-end',
     paddingRight: 15,
     fontSize: 14,
@@ -106,13 +107,14 @@ const styles = StyleSheet.create({
     flex: 3.2,
     marginRight: 10,
     textAlign: 'right',
-    fontSize: 15,
+    fontSize: 16,
     flexWrap: 'nowrap',
   },
   volume_down: {
     flex: 3.2,
     marginRight: 10,
     textAlign: 'right',
+    fontSize: 12,
   },
   contentContainerStyle: {
     padding: 10,
@@ -331,7 +333,12 @@ function HomeScreen({ navigation }) {
             })}
           </Text>
           <Text style={styles.volume} numberOfLines={1}>
-            {item.total_volume.toLocaleString('en')}
+            {item.total_volume.toLocaleString('en', {
+              style: 'currency',
+              currency: 'USD',
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
+            })}
           </Text>
         </View>
         <View style={styles.listContentLower}>
@@ -351,7 +358,14 @@ function HomeScreen({ navigation }) {
             {convertNull(item.price_change_percentage_24h).toFixed(2)}
             %
           </Text>
-          <Text style={styles.volume_down}>test</Text>
+          <Text style={styles.volume_down}>
+            {(item.total_volume / item.current_price).toLocaleString('en', {
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
+            })}
+            {' '}
+            {item.symbol.toUpperCase()}
+          </Text>
         </View>
       </TouchableOpacity>
     ),
