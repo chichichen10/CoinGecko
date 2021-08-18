@@ -105,7 +105,7 @@ const DetailScreen = ({ route }) => {
           ],
         }}
         width={screenWidth * 0.9}
-        height={220}
+        height={440}
         chartConfig={chartConfig}
         bezier
         withDots={false}
