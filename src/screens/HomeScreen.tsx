@@ -230,6 +230,12 @@ function HomeScreen({ navigation }) {
       });
   }, [sortBy]);
 
+  // refresh when getting back to this screen
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => refresh());
+    return unsubscribe;
+  }, [navigation]);
+
   const changeOrder = useCallback(
     (target) => {
       console.log('called!!!!!');

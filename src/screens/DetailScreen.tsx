@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
   chartContainer: { flex: 18 },
   chart: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   priceContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  labelText: { fontSize: 8 },
+  labelText: { fontSize: 12 },
   priceText: { fontSize: 28 },
   container: {
     flex: 1,
@@ -80,6 +80,12 @@ const DetailScreen = ({ route }) => {
     decimalPlaces: 10,
   };
 
+  const formatYLabel = useCallback((x) => {
+    if (Number(x) < 10) return Number(x).toFixed(6).toString();
+    if (Number(x) < 1000) return Number(x).toFixed(4).toString();
+    return Number(x).toFixed(0).toString();
+  }, []);
+
   const PriceChart = () => (isLoadingMarketData ? (
     <View style={styles.chartContainer}>
       <ActivityIndicator
@@ -111,11 +117,7 @@ const DetailScreen = ({ route }) => {
         withDots={false}
         withVerticalLines={false}
         segments={8}
-        formatYLabel={(x) => {
-          if (Number(x) < 10) return Number(x).toFixed(6).toString();
-          if (Number(x) < 1000) return Number(x).toFixed(4).toString();
-          return Number(x).toFixed(0).toString();
-        }}
+        formatYLabel={formatYLabel}
       />
     </View>
   ));
@@ -127,6 +129,24 @@ const DetailScreen = ({ route }) => {
       .catch((error) => console.error(error))
       .finally(() => setLoadingCoinData(false));
   }, []);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      if (!isLoadingCoinData && !isLoadingMarketData) {
+        console.log('refresh');
+        fetch(`https://api.coingecko.com/api/v3/coins/${route.params.id}?localization=false`)
+          .then((response) => response.json())
+          .then((json) => setCoinData(json));
+        fetch(
+          `https://api.coingecko.com/api/v3/coins/${route.params.id}/market_chart?vs_currency=usd&days=${dataInterval}`,
+        )
+          .then((response) => response.json())
+          .then((json) => setMarketData(json));
+        console.log(dataInterval);
+      }
+    }, 5000);
+    return () => clearInterval(id);
+  }, [isLoadingCoinData, isLoadingMarketData, dataInterval]);
 
   useEffect(() => {
     if (marketData != null) {
