@@ -1,12 +1,16 @@
 {
   "dependencies": {
+    "@expo-google-fonts/inter": "^0.2.0",
+    "@expo-google-fonts/roboto-condensed": "^0.2.0",
     "@react-native-community/masked-view": "0.1.10",
     "@react-native-picker/picker": "1.16.1",
     "@react-navigation/bottom-tabs": "~5.11.7",
     "@react-navigation/native": "~5.9.2",
     "@react-navigation/stack": "^5.14.5",
     "expo": "~42.0.0",
+    "expo-app-loading": "^1.1.2",
     "expo-chart-kit": "^1.2.4",
+    "expo-font": "~9.2.1",
     "prop-types": "^15.7.2",
     "react": "16.13.1",
     "react-dom": "16.13.1",

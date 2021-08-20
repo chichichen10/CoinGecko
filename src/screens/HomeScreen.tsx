@@ -32,24 +32,29 @@ const styles = StyleSheet.create({
   headerRank: {
     width: 25,
     paddingLeft: 10,
+    fontFamily: 'RobotoCondensed_400Regular',
   },
   headerName: {
     flex: 1.2,
     marginLeft: 10,
     textAlign: 'left',
+    fontFamily: 'RobotoCondensed_400Regular',
   },
   headerPrice: {
     flex: 3,
     textAlign: 'center',
     paddingRight: 15,
+    fontFamily: 'RobotoCondensed_400Regular',
   },
   headerVolume: {
     flex: 3.2,
     textAlign: 'center',
     marginRight: 10,
+    fontFamily: 'RobotoCondensed_400Regular',
   },
   headerText: {
     textAlign: 'right',
+    fontFamily: 'RobotoCondensed_400Regular',
   },
   logoContainer: {
     width: 25,
@@ -61,6 +66,7 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     textAlign: 'center',
     fontSize: 10,
+    fontFamily: 'RobotoCondensed_400Regular',
   },
   logo: {
     width: 15,
@@ -70,8 +76,8 @@ const styles = StyleSheet.create({
     flex: 1.2,
     textAlign: 'left',
     marginLeft: 10,
-    fontSize: 16,
-    // fontFamily: 'Courier New',
+    fontSize: 18,
+    fontFamily: 'RobotoCondensed_700Bold',
     fontWeight: 'bold',
     flexWrap: 'nowrap',
   },
@@ -80,21 +86,15 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     marginLeft: 10,
     fontSize: 12,
-    // fontFamily: 'Courier New',
+    fontFamily: 'RobotoCondensed_400Regular',
   },
-  // price: {
-  //   flex: 3,
-  //   justifyContent: 'flex-end',
-  //   paddingRight: 25,
-  //   flexDirection: 'column',
-  // },
-
   currentPrice: {
     flex: 3,
     justifyContent: 'flex-end',
     paddingRight: 15,
-    fontSize: 20,
+    fontSize: 18,
     textAlign: 'right',
+    fontFamily: 'RobotoCondensed_400Regular',
   },
   priceChange: {
     flex: 2,
@@ -102,19 +102,22 @@ const styles = StyleSheet.create({
     paddingRight: 15,
     fontSize: 14,
     textAlign: 'right',
+    fontFamily: 'RobotoCondensed_400Regular',
   },
   volume: {
     flex: 3.2,
     marginRight: 10,
     textAlign: 'right',
-    fontSize: 16,
+    fontSize: 18,
     flexWrap: 'nowrap',
+    fontFamily: 'RobotoCondensed_400Regular',
   },
   volume_down: {
     flex: 3.2,
     marginRight: 10,
     textAlign: 'right',
     fontSize: 12,
+    fontFamily: 'RobotoCondensed_400Regular',
   },
   contentContainerStyle: {
     padding: 10,
