@@ -1,3 +1,4 @@
+/* eslint-disable global-require */
 import React, { useEffect, useState, useCallback } from 'react';
 import {
   Text,
@@ -6,13 +7,18 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   StyleSheet,
+  Image,
 } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import LoadingComponent from '../components/LoadingComponent';
 import { ApiCoins, ApiCoinsMarketChart } from '../models/CoinGeckoAPIType';
 
 const styles = StyleSheet.create({
-  title: { flex: 2, marginTop: '5%', fontSize: 28 },
+  title: { flex: 2, marginTop: '5%', flexDirection: 'row' },
+  titleText: { fontSize: 28, textAlign: 'center' },
+  like: { marginTop: 8, marginLeft: 5 },
+  likeImage: { width: 20, height: 20 },
   chartContainer: { flex: 18 },
   chart: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   priceContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
@@ -57,6 +63,8 @@ const DetailScreen = ({ route }) => {
   const [dataInterval, setDataInterval] = useState(1);
   const [timeLable, setTimeLable] = useState(['24h', '18h', '12h', '6h']);
   const [average, setAverage] = useState([]);
+  const [liked, setLike] = useState(false);
+  const [likedList, setLikeList] = useState([]);
 
   // console.log(data);
   const screenWidth = Dimensions.get('window').width;
@@ -122,10 +130,26 @@ const DetailScreen = ({ route }) => {
     </View>
   ));
 
+  const getLikeList = async (id: string) => {
+    try {
+      const value = await AsyncStorage.getItem('liked');
+      if (value !== null) {
+        const list = JSON.parse(value);
+        setLikeList(list);
+        if (list.find((x) => x.id === id)) setLike(true);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   useEffect(() => {
     fetch(`https://api.coingecko.com/api/v3/coins/${route.params.id}?localization=false`)
       .then((response) => response.json())
-      .then((json) => setCoinData(json))
+      .then((json) => {
+        setCoinData(json);
+        getLikeList(json.id);
+      })
       .catch((error) => console.error(error))
       .finally(() => setLoadingCoinData(false));
   }, []);
@@ -192,15 +216,6 @@ const DetailScreen = ({ route }) => {
       .catch((error) => console.error(error));
   }, [timeLable]);
 
-  // const timestampToString = (timestamp) => {
-  //   const date = new Date(timestamp);
-  //   const hours = date.getHours();
-  //   const minutes = `0${date.getMinutes()}`;
-  //   const month = date.getMonth() + 1;
-  //   const day = date.getDate();
-  //   return `${month}/${day}\n${hours}:${minutes.substr(-2)}`;
-  // };
-
   const handleDataInterval = useCallback((days) => () => setDataInterval(days), []);
 
   const PriceDetail = () => (isLoadingCoinData ? (
@@ -234,13 +249,38 @@ const DetailScreen = ({ route }) => {
     </View>
   ));
 
+  const handlePressLike = async () => {
+    if (!liked) {
+      const updatedList = likedList;
+      updatedList.push({ id: coinData.id });
+      setLikeList(updatedList);
+      try {
+        const jsonValue = JSON.stringify(updatedList);
+        await AsyncStorage.setItem('liked', jsonValue);
+      } catch (e) {
+        console.log(e);
+      }
+    } else {
+      console.log('todo');
+      // todo
+    }
+    setLike(!liked);
+  };
+
+  const likeImageSrc = liked ? require('../assets/like.png') : require('../assets/heart.png');
+
   return (
     <View style={styles.container}>
       {isLoadingCoinData ? (
         <LoadingComponent />
       ) : (
         <View style={styles.container}>
-          <Text style={styles.title}>{coinData.name}</Text>
+          <View style={styles.title}>
+            <Text style={styles.titleText}>{coinData.name}</Text>
+            <TouchableOpacity style={styles.like} onPress={handlePressLike}>
+              <Image source={likeImageSrc} style={styles.likeImage} />
+            </TouchableOpacity>
+          </View>
           <PriceDetail />
           <View style={styles.timeSwitch}>
             <TouchableOpacity

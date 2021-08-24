@@ -3,10 +3,9 @@
     "@expo-google-fonts/inter": "^0.2.0",
     "@expo-google-fonts/roboto-condensed": "^0.2.0",
     "@react-native-community/masked-view": "0.1.10",
-    "@react-native-picker/picker": "1.16.1",
-    "@react-navigation/bottom-tabs": "~5.11.7",
-    "@react-navigation/native": "~5.9.2",
-    "@react-navigation/stack": "^5.14.5",
+    "@react-navigation/drawer": "^6.1.4",
+    "@react-navigation/native": "^6.0.2",
+    "@react-navigation/stack": "^6.0.7",
     "expo": "~42.0.0",
     "expo-app-loading": "^1.1.2",
     "expo-chart-kit": "^1.2.4",
@@ -25,7 +24,7 @@
     "react-native-svg": "12.1.1",
     "react-native-web": "~0.13.12",
     "react-native-webview": "^11.6.5",
-    "victory-native": "^35.3.3"
+    "@react-native-async-storage/async-storage": "~1.15.0"
   },
   "devDependencies": {
     "@babel/core": "~7.9.0",

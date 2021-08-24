@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 export interface ApiCoins {
   name: string;
+  id: string;
   market_data: {
     current_price: {
       twd: number;
