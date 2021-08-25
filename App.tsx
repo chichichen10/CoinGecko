@@ -3,6 +3,7 @@
 import 'react-native-gesture-handler';
 import * as React from 'react';
 import { useCallback } from 'react';
+import { StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -19,6 +20,12 @@ import DrawerContent from './src/screens/DrawerContent';
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 
+const styles = StyleSheet.create({
+  drawer: {
+    width: 180,
+  },
+});
+
 export default function App() {
   const [fontsLoaded] = useFonts({
     RobotoCondensed_400Regular,
@@ -27,7 +34,10 @@ export default function App() {
 
   const Home = useCallback(
     () => (
-      <Drawer.Navigator drawerContent={(props) => <DrawerContent {...props} />}>
+      <Drawer.Navigator
+        screenOptions={{ drawerStyle: styles.drawer }}
+        drawerContent={(props) => <DrawerContent {...props} />}
+      >
         <Drawer.Screen name="HomeScreen" component={HomeScreen} options={{ title: 'Overview' }} />
       </Drawer.Navigator>
     ),

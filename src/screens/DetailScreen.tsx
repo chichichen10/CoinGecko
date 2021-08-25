@@ -130,7 +130,7 @@ const DetailScreen = ({ route }) => {
     </View>
   ));
 
-  const getLikeList = async (id: string) => {
+  const getLikeList = useCallback(async (id: string) => {
     try {
       const value = await AsyncStorage.getItem('liked');
       if (value !== null) {
@@ -141,7 +141,7 @@ const DetailScreen = ({ route }) => {
     } catch (e) {
       console.log(e);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetch(`https://api.coingecko.com/api/v3/coins/${route.params.id}?localization=false`)
@@ -249,23 +249,25 @@ const DetailScreen = ({ route }) => {
     </View>
   ));
 
-  const handlePressLike = async () => {
+  const handlePressLike = useCallback(async () => {
+    const updatedList = likedList;
     if (!liked) {
-      const updatedList = likedList;
-      updatedList.push({ id: coinData.id });
+      updatedList.push({ id: coinData.id, image: coinData.image.small, symbol: coinData.symbol });
       setLikeList(updatedList);
-      try {
-        const jsonValue = JSON.stringify(updatedList);
-        await AsyncStorage.setItem('liked', jsonValue);
-      } catch (e) {
-        console.log(e);
-      }
     } else {
-      console.log('todo');
+      const index = updatedList.findIndex((x) => x.id === coinData.id);
+      updatedList.splice(index, 1);
+      setLikeList(updatedList);
       // todo
     }
+    try {
+      const jsonValue = JSON.stringify(updatedList);
+      await AsyncStorage.setItem('liked', jsonValue);
+    } catch (e) {
+      console.log(e);
+    }
     setLike(!liked);
-  };
+  }, [liked, likedList]);
 
   const likeImageSrc = liked ? require('../assets/like.png') : require('../assets/heart.png');
 

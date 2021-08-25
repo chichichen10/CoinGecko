@@ -2,6 +2,10 @@
 export interface ApiCoins {
   name: string;
   id: string;
+  symbol: string;
+  image: {
+    small: string;
+  };
   market_data: {
     current_price: {
       twd: number;
