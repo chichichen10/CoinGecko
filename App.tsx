@@ -2,11 +2,10 @@
 /* eslint-disable camelcase */
 import 'react-native-gesture-handler';
 import * as React from 'react';
-import { useCallback } from 'react';
-import { StyleSheet } from 'react-native';
+import { Button } from 'react-native';
+// import { StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { createDrawerNavigator } from '@react-navigation/drawer';
 import {
   useFonts,
   RobotoCondensed_400Regular,
@@ -15,16 +14,16 @@ import {
 import AppLoading from 'expo-app-loading';
 import HomeScreen from './src/screens/HomeScreen';
 import DetailScreen from './src/screens/DetailScreen';
-import DrawerContent from './src/screens/DrawerContent';
+// import DrawerContent from './src/screens/DrawerContent';
+import MoreScreen from './src/screens/MoreScreen';
 
 const Stack = createStackNavigator();
-const Drawer = createDrawerNavigator();
 
-const styles = StyleSheet.create({
-  drawer: {
-    width: 180,
-  },
-});
+// const styles = StyleSheet.create({
+//   drawer: {
+//     width: 180,
+//   },
+// });
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -32,17 +31,17 @@ export default function App() {
     RobotoCondensed_700Bold,
   });
 
-  const Home = useCallback(
-    () => (
-      <Drawer.Navigator
-        screenOptions={{ drawerStyle: styles.drawer }}
-        drawerContent={(props) => <DrawerContent {...props} />}
-      >
-        <Drawer.Screen name="HomeScreen" component={HomeScreen} options={{ title: 'Overview' }} />
-      </Drawer.Navigator>
-    ),
-    [],
-  );
+  // const Home = useCallback(
+  //   () => (
+  //     <Drawer.Navigator
+  //       screenOptions={{ drawerStyle: styles.drawer }}
+  //       drawerContent={(props) => <DrawerContent {...props} />}
+  //     >
+  // <Drawer.Screen name="HomeScreen" component={HomeScreen} options={{ title: 'Overview' }} />
+  //     </Drawer.Navigator>
+  //   ),
+  //   [],
+  // );
 
   if (!fontsLoaded) {
     return <AppLoading />;
@@ -50,8 +49,21 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
-        <Stack.Screen name="Detail" component={DetailScreen} />
+        <Stack.Group>
+          <Stack.Screen
+            name="Home"
+            component={HomeScreen}
+            options={({ navigation }) => ({
+              headerRight: () => (
+                <Button onPress={() => navigation.navigate('More')} title="More" />
+              ),
+            })}
+          />
+          <Stack.Screen name="Detail" component={DetailScreen} />
+        </Stack.Group>
+        <Stack.Group screenOptions={{ presentation: 'modal' }}>
+          <Stack.Screen name="More" component={MoreScreen} />
+        </Stack.Group>
       </Stack.Navigator>
     </NavigationContainer>
   );

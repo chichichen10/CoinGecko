@@ -236,7 +236,6 @@ function HomeScreen({ navigation }) {
   // refresh when getting back to this screen
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      navigation.closeDrawer();
       refresh();
     });
     return unsubscribe;
