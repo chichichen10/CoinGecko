@@ -155,6 +155,7 @@ export default function DrawerContent({ navigation }) {
         onChangeText={updateSearch}
         spinnerVisibility={isLoading}
         onClearPress={handleClear}
+        returnKeyType="search"
       />
       <SearchItem />
       <Text style={styles.test}>Favorite</Text>
