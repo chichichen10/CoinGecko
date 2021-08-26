@@ -16,6 +16,8 @@
     "react-dom": "16.13.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-42.0.0.tar.gz",
     "react-native-chart-kit": "^6.11.0",
+    "react-native-dynamic-search-bar": "github:WrathChaos/react-native-dynamic-search-bar#expo",
+    "react-native-dynamic-vector-icons": "github:WrathChaos/react-native-dynamic-vector-icons#expo",
     "react-native-echarts-wrapper": "^2.0.0",
     "react-native-elements": "^3.4.2",
     "react-native-gesture-handler": "~1.10.2",
