@@ -152,6 +152,7 @@ export default function MoreScreen({ navigation }) {
         style={styles.searchBar}
         placeholder="Search here"
         onSearchPress={handlePressSearch}
+        onSubmitEditing={handlePressSearch}
         onChangeText={updateSearch}
         spinnerVisibility={isLoading}
         onClearPress={handleClear}
